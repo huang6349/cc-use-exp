@@ -126,7 +126,7 @@ cp .claude/CLAUDE.md ~/.claude/
 | 技能 | 触发条件 | 提供的帮助 |
 |------|---------|-----------|
 | `java-dev` | 操作 `.java` 文件 | 命名约定、异常处理、Spring 规范、不可变集合、线程池、代码模式 |
-| `frontend-dev` | 操作 `.tsx/.ts/.js/.scss/.css` 等 | UI 风格约束、React/Vue 规范、JavaScript、TypeScript |
+| `frontend-dev` | 操作 `.tsx/.ts/.js/.scss/.css` 等 | UI 风格约束、React/Vue 规范、TS/JS |
 | `bash-style` | 操作 `.sh/Dockerfile/Makefile/.md` 等 | 注释规范、tee 写入、heredoc、脚本规范 |
 | `ops-safety` | 执行系统命令、服务器运维 | 风险说明、回滚方案、问题排查原则 |
 

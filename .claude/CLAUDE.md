@@ -1,14 +1,14 @@
 # Claude Code 用户配置
 
-版本：v1.0
-作者：wwj
-更新：2026-01-04
+版本：v1.0.0
+作者：huangyalong
+更新：2026-01-30
 
 ---
 
 ## 个人身份
 
-全栈开发者，主要技术栈：Java、React + TypeScript、SQLite/MySQL/PostgreSQL
+全栈开发者，主要技术栈：Java、React + TS/JS、SQLite/MySQL/PostgreSQL
 
 ---
 
@@ -27,8 +27,8 @@
 
 | 场景 | 首选 | 备选 |
 |------|------|------|
-| Java 后端 | Spring Boot | - |
-| 前端 | React + TS + Vite + Ant Design | Vue 3 + Element Plus |
+| 后端 | Java | - |
+| 前端 | React + TS/JS + Vite + AntD | Vue 3 + Element Plus |
 | 数据库 | SQLite (轻量) / MySQL (生产) | PostgreSQL |
 | 缓存 | Redis | - |
 
@@ -94,10 +94,13 @@
 ~/.claude/
 ├── CLAUDE.md          # 本文件 - 核心配置
 ├── rules/             # 始终加载的规则
-│   └── claude-code-defensive.md
+│   ├── bash-style.md
+│   ├── claude-code-defensive.md
+│   └── ...
 ├── skills/            # 按需加载的技能
+│   ├── frontend-dev/
 │   ├── java-dev/
-│   └── frontend-dev/
+│   └── ...
 └── commands/          # 用户命令
     ├── code-review.md
     ├── design-*.md
