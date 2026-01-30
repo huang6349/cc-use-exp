@@ -31,7 +31,6 @@ description: 为新项目初始化 Claude Code 配置
 - [ ] 其他：___
 
 **数据库**：
-- [ ] SQLite
 - [ ] MySQL
 - [ ] PostgreSQL
 - [ ] MongoDB

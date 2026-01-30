@@ -8,7 +8,7 @@
 
 ## 个人身份
 
-全栈开发者，主要技术栈：Java、React + TS/JS、SQLite/MySQL/PostgreSQL
+全栈开发者，主要技术栈：Java、React + TS/JS、MySQL/PostgreSQL
 
 ---
 
@@ -29,7 +29,7 @@
 |------|------|------|
 | 后端 | Java | - |
 | 前端 | React + TS/JS + Vite + AntD | Vue 3 + Element Plus |
-| 数据库 | SQLite (轻量) / MySQL (生产) | PostgreSQL |
+| 数据库 | MySQL | PostgreSQL |
 | 缓存 | Redis | - |
 
 ---
@@ -92,7 +92,7 @@
 
 ```text
 ~/.claude/
-├── CLAUDE.md          # 本文件 - 核心配置
+├── CLAUDE.md          # 项目配置
 ├── rules/             # 始终加载的规则
 │   ├── bash-style.md
 │   ├── claude-code-defensive.md

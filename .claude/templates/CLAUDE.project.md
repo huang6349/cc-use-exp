@@ -31,7 +31,7 @@
 | 后端 | Java / Node.js | x.x+ |
 | Web 框架 | Spring Boot / Express | x.x+ |
 | ORM | JPA / Prisma | x.x+ |
-| 数据库 | SQLite / MySQL / PostgreSQL | x.x |
+| 数据库 | MySQL / PostgreSQL | x.x |
 | 前端框架 | React / Vue | x.x+ |
 | 前端语言 | TypeScript | x.x+ |
 | UI 组件库 | Ant Design / Element Plus | x.x+ |
@@ -132,11 +132,6 @@ cd web && npm run dev
 ### 数据库操作
 
 ```bash
-# SQLite
-sqlite3 data.db
-.tables
-.schema [表名]
-
 # MySQL
 mysql -u root -p [数据库名]
 ```

@@ -51,7 +51,6 @@ tmp/
 
 # 数据库文件（按需）
 *.db
-*.sqlite
 ```
 
 ### .gitignore（在上述基础上增加）
@@ -102,7 +101,6 @@ __tests__/
 
 | 关键词 | 依赖 |
 |--------|------|
-| `sqlite` | SQLite |
 | `mysql` | MySQL |
 | `postgres` | PostgreSQL |
 | `redis`, `go-redis` | Redis |
@@ -142,7 +140,6 @@ __tests__/
 
 | 数据库 | docker-compose 模板 |
 |--------|-------------------|
-| SQLite | `docker-compose-sqlite.yml.tmpl` |
 | MySQL | `docker-compose-mysql.yml.tmpl` |
 | Redis | `docker-compose-redis.yml.tmpl` |
 | MySQL + Redis | 合并两个模板 |
