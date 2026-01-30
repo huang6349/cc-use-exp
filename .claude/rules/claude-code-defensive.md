@@ -42,7 +42,7 @@ paths: "**/*"
 ## ✅ 必须遵循
 
 ### 1. Type-First（类型先行）
-编写业务逻辑前，先定义数据结构（Go: struct/interface, TS: interface/type, Java: DTO/VO）
+编写业务逻辑前，先定义数据结构（TS: interface/type, Java: DTO/VO）
 
 ### 2. 复杂任务工作流
 **复杂任务**：超过 3 个步骤或涉及多个文件
@@ -63,7 +63,7 @@ paths: "**/*"
 
 **不用 LSP（直接 Grep/Read）**：全文搜索、搜索注释/字符串、理解整体架构、查看文件结构
 
-**调用声明**：`> 🔍 LSP: gopls - Find References`
+**调用声明**：`> 🔍 LSP: jdtls - Find References`
 
 ---
 

@@ -28,9 +28,9 @@
 
 | 层级 | 技术 | 版本 |
 |------|------|------|
-| 后端 | Go / Java / Node.js | x.x+ |
-| Web 框架 | Gin / Spring Boot / Express | x.x+ |
-| ORM | GORM / JPA / Prisma | x.x+ |
+| 后端 | Java / Node.js | x.x+ |
+| Web 框架 | Spring Boot / Express | x.x+ |
+| ORM | JPA / Prisma | x.x+ |
 | 数据库 | SQLite / MySQL / PostgreSQL | x.x |
 | 前端框架 | Vue / React | x.x+ |
 | 前端语言 | TypeScript | x.x+ |
@@ -45,7 +45,7 @@
 
 ```
 项目名/
-├── main.go / src/main/java     # 入口文件
+├── src/main/java               # 入口文件
 ├── internal/ / src/            # 业务代码
 │   ├── handler/ / controller/  # HTTP 处理器
 │   ├── service/                # 业务逻辑
@@ -59,7 +59,7 @@
 │   │   └── stores/             # 状态管理
 │   └── package.json
 ├── restart.sh                  # 重启脚本（如有）
-└── go.mod / pom.xml / package.json
+└── pom.xml / package.json
 ```
 
 ---
@@ -73,7 +73,7 @@
 | 约定 | 说明 |
 |------|------|
 | 启动方式 | 使用 `./restart.sh` / `docker-compose up` / `npm run dev` |
-| 数据库迁移 | GORM AutoMigrate / Flyway / 手动 SQL |
+| 数据库迁移 | Flyway / 手动 SQL / JPA Hibernate |
 | 注释风格 | 不使用行尾注释，注释单独成行 |
 | 作者署名 | 所有文档和代码署名使用 wwj |
 
@@ -84,15 +84,6 @@
 <!-- 如果是后端项目，定义 API 规范 -->
 
 **统一响应格式**：
-
-```go
-// Go 示例
-type Response struct {
-    Code    int         `json:"code"`    // 0 成功，非 0 失败
-    Message string      `json:"message"` // 提示信息
-    Data    interface{} `json:"data,omitempty"`
-}
-```
 
 ```java
 // Java 示例
@@ -132,7 +123,7 @@ public class Result<T> {
 ./restart.sh
 
 # 仅编译
-go build -o server . / mvn package / npm run build
+mvn package / npm run build
 
 # 开发模式
 cd web && npm run dev

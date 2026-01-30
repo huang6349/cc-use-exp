@@ -18,12 +18,12 @@ description: 显示当前加载的配置状态
 
 ### Skills（按需加载）
 [根据本次会话操作的文件类型列出]
-- go-dev（已触发：操作了 .go 文件）
+- java-dev（已触发：操作了 .java 文件）
 - 或：暂无触发
 
 ### LSP（语言服务器）
 [检查各 LSP 服务器状态]
-- gopls: ✅ 可用 / ❌ 未安装
+- jdtls: ✅ 可用 / ❌ 未安装
 - typescript-language-server: ✅ 可用 / ❌ 未安装
 - pyright: ✅ 可用 / ❌ 未安装
 
@@ -39,15 +39,12 @@ description: 显示当前加载的配置状态
 
 1. 列出 `~/.claude/rules/` 下所有 `.md` 文件
 2. 检查本次会话是否触发了任何 Skill
-3. 检查 LSP 服务器安装状态（gopls, typescript-language-server, pyright, jdtls）
+3. 检查 LSP 服务器安装状态（jdtls, typescript-language-server, pyright）
 4. 列出所有可用命令
 
 ## LSP 检查命令
 
 ```bash
-# Go
-which gopls
-
 # TypeScript
 which typescript-language-server
 

@@ -8,7 +8,7 @@
 
 ## 个人身份
 
-全栈开发者，主要技术栈：Go、Java、Vue + TypeScript、SQLite/MySQL/PostgreSQL
+全栈开发者，主要技术栈：Java、Vue + TypeScript、SQLite/MySQL/PostgreSQL
 
 ---
 
@@ -27,7 +27,6 @@
 
 | 场景 | 首选 | 备选 |
 |------|------|------|
-| Go 后端 | Gin + GORM | Echo, Fiber |
 | Java 后端 | Spring Boot | - |
 | 前端 | Vue 3 + TS + Vite + Element Plus | React + Ant Design |
 | 数据库 | SQLite (轻量) / MySQL (生产) | PostgreSQL |
@@ -84,8 +83,8 @@
 | 类型 | 格式 |
 |------|------|
 | Rule | `> 📋 本回复遵循：`claude-code-defensive.md` - [章节]` |
-| Skill | `> 📋 本回复遵循：`go-dev` - [章节]` |
-| LSP | `> 🔍 LSP: `gopls` - Find References` |
+| Skill | `> 📋 本回复遵循：`java-dev` - [章节]` |
+| LSP | `> 🔍 LSP: `jdtls` - Find References` |
 
 ---
 
@@ -97,7 +96,6 @@
 ├── rules/             # 始终加载的规则
 │   └── claude-code-defensive.md
 ├── skills/            # 按需加载的技能
-│   ├── go-dev/
 │   ├── java-dev/
 │   ├── frontend-dev/
 │   └── python-dev/

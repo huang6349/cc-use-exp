@@ -20,7 +20,6 @@ description: 为新项目初始化 Claude Code 配置
 ### 2. 技术栈
 
 **后端**（可多选）：
-- [ ] Go + Gin
 - [ ] Java + Spring Boot
 - [ ] Node.js + Express
 - [ ] Python + FastAPI
@@ -45,12 +44,12 @@ description: 为新项目初始化 Claude Code 配置
 - [ ] `./restart.sh`
 - [ ] `docker-compose up`
 - [ ] `npm run dev`
-- [ ] `go run main.go`
+- [ ] `mvn spring-boot:run`
 - [ ] 其他：___
 
 **数据库迁移方式**：
-- [ ] GORM AutoMigrate
 - [ ] Flyway
+- [ ] JPA Hibernate
 - [ ] 手动 SQL
 - [ ] 其他：___
 

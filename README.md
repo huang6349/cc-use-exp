@@ -119,7 +119,6 @@ cp .claude/CLAUDE.md ~/.claude/
 
 | 技能 | 触发条件 | 提供的帮助 |
 |------|---------|-----------|
-| `go-dev` | 操作 `.go` 文件 | 命名约定、错误处理、并发编程、测试规范 |
 | `java-dev` | 操作 `.java` 文件 | 命名约定、异常处理、Spring 规范、不可变集合、线程池、代码模式 |
 | `frontend-dev` | 操作 `.vue/.tsx/.css` 等 | UI 风格约束、Vue/React 规范、TypeScript |
 | `python-dev` | 操作 `.py` 文件 | 类型注解、Pydantic、pytest、uv 工具链 |
@@ -128,7 +127,6 @@ cp .claude/CLAUDE.md ~/.claude/
 
 **效果示例**：
 
-- 写 Go 代码时，自动遵循 Effective Go 规范
 - 写 Vue 组件时，自动使用 Composition API + TypeScript
 - 不操作这些文件时，不消耗额外 token
 
@@ -247,7 +245,6 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 │   ├── doc-sync.md               # 文档同步
 │   └── bash-style.md             # Bash 核心规范
 ├── skills/                       # 技能：按需加载（完整版）
-│   ├── go-dev/
 │   ├── java-dev/
 │   ├── frontend-dev/
 │   ├── python-dev/
@@ -302,9 +299,6 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 #### 安装命令
 
 ```bash
-# Go
-go install golang.org/x/tools/gopls@latest
-
 # TypeScript/JavaScript + Vue
 npm install -g typescript typescript-language-server @vue/language-server
 
@@ -327,7 +321,7 @@ LSP 的核心优势是"精准打击"——查找定义时只返回相关代码�
 
 #### 注意事项
 
-- **环境就绪**：使用前确保依赖已安装（`npm install` / `go mod download`）
+- **环境就绪**：使用前确保依赖已安装（`npm install` / `pip install`）
 - **避免过度依赖**：复杂逻辑需要读取完整文件上下文
 - **LSP 失败时**：退回到读取文件的方式
 
@@ -407,7 +401,7 @@ claude
 > /fix 测试问题
 
 # 测试技能（操作相关文件类型）
-> 帮我看看这个 Go 代码有什么问题
+> 帮我看看这个 Java 代码有什么问题
 
 # 检查配置加载
 > /memory
