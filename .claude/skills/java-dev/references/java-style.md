@@ -124,12 +124,13 @@ public <E> List<E> filterList(List<E> list, Predicate<E> predicate) { }
 
 ```java
 public class Example {
+
     // 1. 静态常量
     public static final String CONSTANT = "value";
 
     // 2. 静态变量
     private static Logger logger = LoggerFactory.getLogger(Example.class);
-
+    
     // 3. 实例变量（按访问级别：public → protected → package → private）
     private Long id;
     private String name;
@@ -141,11 +142,15 @@ public class Example {
     // 5. 静态方法
     public static Example create() { return new Example(); }
 
-    // 6. 实例方法（公共方法 → 私有方法）
-    public void doSomething() { }
-    private void helperMethod() { }
+    // 6. 实例方法（公共）
+    public void doSomething() {
+    }
 
-    // 7. getter/setter（放最后或使用 Lombok）
+    // 7. 实例方法（私有）
+    private void helperMethod() {
+    }
+
+    // 8. getter/setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 }
@@ -178,16 +183,14 @@ project/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/example/project/
-│   │   │       ├── controller/      # Web 层
-│   │   │       ├── service/         # 业务层
-│   │   │       │   └── impl/
-│   │   │       ├── repository/      # 数据访问层
-│   │   │       ├── model/           # 领域模型
-│   │   │       │   ├── entity/      # JPA 实体
-│   │   │       │   ├── dto/         # 数据传输对象
-│   │   │       │   └── vo/          # 视图对象
-│   │   │       ├── config/          # 配置类
-│   │   │       └── util/            # 工具类
+│   │   │       ├── configs/         # 配置类
+│   │   │       ├── domain/          # 实体类 (继承 SuperEntity)
+│   │   │       ├── enums/           # 枚举类
+│   │   │       ├── request/         # BO 和 Query 类
+│   │   │       ├── response/        # VO (部分模块特有)
+│   │   │       ├── service/         # 服务接口
+│   │   │       │   └── impl/        # 服务实现
+│   │   │       └── web/             # 控制器
 │   │   └── resources/
 │   │       └── application.yml
 │   └── test/
@@ -238,21 +241,16 @@ try {
 - 必须提供有意义的消息
 
 ```java
+@Getter
+@Setter
 public class BusinessException extends RuntimeException {
-    private final String errorCode;
+    
+    private Integer errorCode;
 
-    public BusinessException(String errorCode, String message) {
+    public BusinessException(Integer errorCode,
+                             String message) {
         super(message);
         this.errorCode = errorCode;
-    }
-
-    public BusinessException(String errorCode, String message, Throwable cause) {
-        super(message, cause);
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
     }
 }
 ```
@@ -269,7 +267,8 @@ public class BusinessException extends RuntimeException {
 ```java
 // ✅ 好：使用 Optional
 public Optional<User> findById(Long id) {
-    return userRepository.findById(id);
+    return getBaseService()
+            .findById(id);
 }
 
 // ✅ 好：参数校验
@@ -286,7 +285,9 @@ String name = Optional.ofNullable(user)
 
 // ❌ 差：返回 null 表示"没找到"
 public User findById(Long id) {
-    return userRepository.findById(id).orElse(null);  // 调用方容易忘记判空
+    return getBaseService()
+            .findById(id)
+            .orElse(null);  // 调用方容易忘记判空
 }
 ```
 
@@ -357,7 +358,9 @@ new Thread(() -> doWork()).start();  // 没有生命周期管理
 ```java
 // ✅ 不可变对象是线程安全的
 public final class User {
+    
     private final Long id;
+    
     private final String name;
 
     public User(Long id, String name) {
@@ -466,39 +469,39 @@ log.debug("Finding user by id: " + userId);
 <!-- [注释] 如果项目使用 Spring，以下是补充规范 -->
 
 ### 依赖注入
-- 优先使用构造函数注入
-- 使用 Lombok 的 `@RequiredArgsConstructor` 简化
+- 优先使用字段注入，简洁直观
+- 需要时使用 `@Autowired`（Spring 4.3+ 可省略）
 
 ```java
-// ✅ 好：构造函数注入
+// ✅ 好：字段注入
+@Getter
+@Service
+public class UserService {
+
+    @Autowired
+    private UserMapper userMapper;
+}
+
+// ❌ 差：构造函数注入
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final EmailService emailService;
 
-    // 不需要 @Autowired，Spring 4.3+ 自动注入
-}
-
-// ❌ 差：字段注入
-@Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;  // 不利于测试
+    private final UserMapper userMapper;
 }
 ```
 
 ### REST Controller
 - 使用 `@RestController` 而非 `@Controller` + `@ResponseBody`
-- 路径使用小写和连字符: `/api/user-profiles`
+- 路径使用小写和斜杠: `/api/user/profiles`
 
 ```java
 @RestController
-@RequestMapping("/api/users")
-@RequiredArgsConstructor
+@RequestMapping("/api/user/profiles")
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {
@@ -607,14 +610,13 @@ String result = strings.stream().collect(Collectors.joining(","));
 
 ```yaml
 # HikariCP 推荐配置
-spring:
-  datasource:
-    hikari:
-      maximum-pool-size: 10          # CPU 核心数 * 2
-      minimum-idle: 5
-      idle-timeout: 300000           # 5 分钟
-      connection-timeout: 20000      # 20 秒
-      max-lifetime: 1200000          # 20 分钟
+spring.datasource:
+  hikari:
+    maximum-pool-size: 10          # CPU 核心数 * 2
+    minimum-idle: 5
+    idle-timeout: 300000           # 5 分钟
+    connection-timeout: 20000      # 20 秒
+    max-lifetime: 1200000          # 20 分钟
 ```
 
 ### 避免常见陷阱
