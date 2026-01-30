@@ -82,12 +82,14 @@ public enum ResultCode {
 ```java
 // 1. 定义策略接口
 public interface PayStrategy {
+    
     void pay();
 }
 
 // 2. 实现具体策略（每个类自注册）
 @Service
 public class AliPay implements PayStrategy {
+    
     @PostConstruct
     public void init() {
         PayFactory.register("ali", this);
@@ -101,6 +103,7 @@ public class AliPay implements PayStrategy {
 
 // 3. 工厂类
 public class PayFactory {
+    
     private static final Map<String, PayStrategy> STRATEGIES = new HashMap<>();
 
     public static void register(String code, PayStrategy strategy) {
@@ -127,6 +130,7 @@ PayFactory.get("ali").pay();
 ```java
 // ❌ 每次创建新实例
 public void doSomething() {
+    
     Random rand = new Random();  // 低效，可能非随机
     int value = rand.nextInt();
 }
