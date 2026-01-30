@@ -305,7 +305,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 # Java (macOS)
 brew install jdtls
 
-# TypeScript/JavaScript
+# TS/JS
 npm install -g typescript typescript-language-server
 ```
 
