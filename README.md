@@ -126,7 +126,7 @@ cp .claude/CLAUDE.md ~/.claude/
 
 **效果示例**：
 
-- 写 React 组件时，自动使用 Hooks + TypeScript
+- 写 Java 服务时，自动遵循 Spring Boot 规范
 - 不操作这些文件时，不消耗额外 token
 
 ### 中费力（显式调用）- Commands
@@ -297,11 +297,11 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 #### 安装命令
 
 ```bash
-# TypeScript/JavaScript + React
-npm install -g typescript-language-server
-
 # Java (macOS)
 brew install jdtls
+
+# TypeScript/JavaScript
+npm install -g typescript typescript-language-server
 ```
 
 #### LSP 使用策略
