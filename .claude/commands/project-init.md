@@ -22,7 +22,6 @@ description: 为新项目初始化 Claude Code 配置
 **后端**（可多选）：
 - [ ] Java + Spring Boot
 - [ ] Node.js + Express
-- [ ] Python + FastAPI
 - [ ] 其他：___
 
 **前端**（可多选）：

@@ -25,7 +25,6 @@ description: 显示当前加载的配置状态
 [检查各 LSP 服务器状态]
 - jdtls: ✅ 可用 / ❌ 未安装
 - typescript-language-server: ✅ 可用 / ❌ 未安装
-- pyright: ✅ 可用 / ❌ 未安装
 
 ### Commands（可用命令）
 日常：/fix, /quick-review, /code-review, /debug
@@ -39,7 +38,7 @@ description: 显示当前加载的配置状态
 
 1. 列出 `~/.claude/rules/` 下所有 `.md` 文件
 2. 检查本次会话是否触发了任何 Skill
-3. 检查 LSP 服务器安装状态（jdtls, typescript-language-server, pyright）
+3. 检查 LSP 服务器安装状态（jdtls, typescript-language-server）
 4. 列出所有可用命令
 
 ## LSP 检查命令
@@ -47,9 +46,6 @@ description: 显示当前加载的配置状态
 ```bash
 # TypeScript
 which typescript-language-server
-
-# Python
-which pyright
 
 # Java (macOS)
 which jdtls

@@ -1,6 +1,6 @@
 ---
 description: 系统化调试（复现 → 假设 → 验证 → 修复）
-allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(go test:*), Bash(npm test:*), Bash(pytest:*)
+allowed-tools: Read, Grep, Glob, Bash(git diff:*), Bash(git log:*), Bash(npm test:*)
 ---
 
 系统化调试问题，遵循科学调试方法。

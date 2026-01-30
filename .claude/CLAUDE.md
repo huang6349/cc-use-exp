@@ -97,8 +97,7 @@
 │   └── claude-code-defensive.md
 ├── skills/            # 按需加载的技能
 │   ├── java-dev/
-│   ├── frontend-dev/
-│   └── python-dev/
+│   └── frontend-dev/
 └── commands/          # 用户命令
     ├── code-review.md
     ├── design-*.md

@@ -121,7 +121,6 @@ cp .claude/CLAUDE.md ~/.claude/
 |------|---------|-----------|
 | `java-dev` | 操作 `.java` 文件 | 命名约定、异常处理、Spring 规范、不可变集合、线程池、代码模式 |
 | `frontend-dev` | 操作 `.vue/.tsx/.css` 等 | UI 风格约束、Vue/React 规范、TypeScript |
-| `python-dev` | 操作 `.py` 文件 | 类型注解、Pydantic、pytest、uv 工具链 |
 | `bash-style` | 操作 `.sh/Dockerfile/Makefile/.md` 等 | 注释规范、tee 写入、heredoc、脚本规范 |
 | `ops-safety` | 执行系统命令、服务器运维 | 风险说明、回滚方案、问题排查原则 |
 
@@ -247,7 +246,6 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 ├── skills/                       # 技能：按需加载（完整版）
 │   ├── java-dev/
 │   ├── frontend-dev/
-│   ├── python-dev/
 │   ├── bash-style/               # Bash 完整规范
 │   └── ops-safety/               # 运维安全完整规范
 └── commands/                     # 命令：显式调用
@@ -301,9 +299,6 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 ```bash
 # TypeScript/JavaScript + Vue
 npm install -g typescript typescript-language-server @vue/language-server
-
-# Python
-npm install -g pyright
 
 # Java (macOS)
 brew install jdtls
