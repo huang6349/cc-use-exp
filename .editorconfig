@@ -1,0 +1,5 @@
+# http://editorconfig.org
+root = true
+
+[*.md]
+ij_markdown_format_tables = false
