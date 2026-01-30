@@ -7,11 +7,10 @@
 
 > **部署位置**: `~/.claude/rules/frontend-style.md`
 > **作用范围**: 前端/界面相关代码
-> **参考来源**: Vue 官方风格指南、Element Plus 最佳实践
+> **参考来源**: React 官方文档、Ant Design 最佳实践
 
 ---
 paths:
-  - "**/*.vue"
   - "**/*.tsx"
   - "**/*.jsx"
   - "**/*.ts"
@@ -30,7 +29,7 @@ paths:
 
 - **仅在涉及前端/界面开发时遵循**本规则
 - **默认使用框架/组件库的脚手架风格**: 不做"AI 设计稿"，不做大改主题色
-- **技术栈优先级**: Vue > React；默认使用 TypeScript
+- **技术栈优先级**: React > Vue；默认使用 TypeScript
 
 ---
 
@@ -54,14 +53,14 @@ paths:
 
 | 要素 | 要求 |
 |------|------|
-| 主题 | 使用组件库默认主题 + 默认布局 |
+| 主题 | 使用 Ant Design 默认主题 + 默认布局 |
 | 配色 | 黑白灰为主 + 1 个主色点缀，避免渐变 |
 | 信息密度 | 适中，表格、筛选、分页、表单用标准组件 |
 | 动效 | 克制，仅保留必要的交互反馈（hover/focus/loading） |
 
 **可选风格**（保持一致，不要混搭）：
-- Element Plus 默认风格（推荐）
-- Ant Design Vue 风格
+- Ant Design 默认风格（推荐）
+- Element Plus 风格
 - Naive UI 风格
 
 ### 1.3 前台宣传/官网（如需要）
@@ -85,18 +84,7 @@ paths:
 
 <!-- [注释] 可根据实际项目调整 -->
 
-### 2.1 Vue 技术栈（首选）
-
-| 层级 | 选择 |
-|------|------|
-| 框架 | Vue 3 + TypeScript |
-| 构建 | Vite |
-| 路由 | Vue Router 4 |
-| 状态管理 | Pinia |
-| UI 组件库 | Element Plus |
-| HTTP | Axios |
-
-### 2.2 React 技术栈（备选）
+### 2.1 React 技术栈（首选）
 
 | 层级 | 选择 |
 |------|------|
@@ -107,223 +95,215 @@ paths:
 | UI 组件库 | Ant Design |
 | 数据请求 | TanStack Query |
 
+### 2.2 Vue 技术栈（备选）
+
+| 层级 | 选择 |
+|------|------|
+| 框架 | Vue 3 + TypeScript |
+| 构建 | Vite |
+| 路由 | Vue Router 4 |
+| 状态管理 | Pinia |
+| UI 组件库 | Element Plus |
+| HTTP | Axios |
+
 ---
 
-## 3. Vue 编码规范
+## 3. React 编码规范
 
-<!-- [注释] Vue 3 Composition API 风格 -->
+<!-- [注释] React Hooks 风格 -->
 
 ### 3.1 组件基础
 
-**必须使用 Composition API + `<script setup>`**：
+**必须使用 Hooks**:
 
-```vue
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+```tsx
+// UserCard.tsx
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import type { User } from '@/types'
+import { Card, Button, Spin } from 'antd'
 
-// Props 定义
-const props = defineProps<{
+interface Props {
   userId: number
   title?: string
-}>()
-
-// Emits 定义
-const emit = defineEmits<{
-  (e: 'update', value: string): void
-  (e: 'delete', id: number): void
-}>()
-
-// 响应式状态
-const loading = ref(false)
-const user = ref<User | null>(null)
-
-// 计算属性
-const displayName = computed(() => user.value?.name ?? '未知用户')
-
-// 生命周期
-onMounted(async () => {
-  await fetchUser()
-})
-
-// 方法
-async function fetchUser() {
-  loading.value = true
-  try {
-    user.value = await api.getUser(props.userId)
-  } finally {
-    loading.value = false
-  }
 }
-</script>
 
-<template>
-  <div class="user-card">
-    <h3>{{ displayName }}</h3>
-    <el-button @click="emit('delete', props.userId)">删除</el-button>
-  </div>
-</template>
+// ✅ 好：函数组件 + Hooks
+export function UserCard({ userId, title = '用户信息' }: Props) {
+  // 响应式状态
+  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
 
-<style scoped>
-.user-card {
-  padding: 16px;
+  // 计算属性
+  const displayName = useMemo(() => user?.name ?? '未知用户', [user])
+
+  // 回调函数
+  const handleRefresh = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await api.getUser(userId)
+      setUser(data)
+    } finally {
+      setLoading(false)
+    }
+  }, [userId])
+
+  // 生命周期
+  useEffect(() => {
+    handleRefresh()
+  }, [handleRefresh])
+
+  // 条件渲染
+  if (loading) return <Spin />
+  if (error) return <Result status="error" title={error} />
+
+  return (
+    <Card title={title}>
+      <h3>{displayName}</h3>
+      <Button onClick={handleRefresh}>刷新</Button>
+    </Card>
+  )
 }
-</style>
 ```
 
 ### 3.2 命名约定
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| 组件文件 | PascalCase.vue | `UserCard.vue` |
-| 组件目录 | 可复用放 `components/`，页面放 `views/` | |
-| Composables | useXxx.ts | `useAuth.ts` |
-| Store | useXxxStore.ts | `useUserStore.ts` |
-| 类型文件 | xxx.d.ts 或 types/ 目录 | `user.d.ts` |
+| 组件文件 | PascalCase.tsx | `UserCard.tsx` |
+| 组件目录 | 可复用放 `components/`，页面放 `pages/` | |
+| Hooks | useXxx.ts | `useAuth.ts` |
+| Store | XxxStore.ts | `UserStore.ts` |
+| 类型文件 | xxx.ts 或 types/ 目录 | `user.ts` |
 
 ### 3.3 组件组织
 
-```vue
-<script setup lang="ts">
-// 1. 导入（按顺序：vue → 第三方 → 项目内部）
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import { useUserStore } from '@/stores/user'
+```tsx
+// 1. 导入（按顺序：React → 第三方 → 项目内部）
+import { useState, useEffect, useCallback } from 'react'
+import { Button, message } from 'antd'
+import { useUserStore } from '@/stores/userStore'
 
-// 2. Props & Emits
-const props = defineProps<{...}>()
-const emit = defineEmits<{...}>()
+// 2. Props 类型定义
+interface Props {
+  id: number
+  onSuccess?: () => void
+}
 
-// 3. Store & Composables
-const userStore = useUserStore()
+// 3. 组件定义
+export function UserForm({ id, onSuccess }: Props) {
+  // 4. Store & Hooks
+  const userStore = useUserStore()
 
-// 4. 响应式状态
-const loading = ref(false)
+  // 5. 响应式状态
+  const [loading, setLoading] = useState(false)
 
-// 5. 计算属性
-const isAdmin = computed(() => userStore.role === 'admin')
+  // 6. 计算属性
+  const isAdmin = useMemo(() => userStore.role === 'admin', [userStore.role])
 
-// 6. 生命周期钩子
-onMounted(() => {...})
+  // 7. 回调函数
+  const handleSubmit = useCallback(async () => {
+    // ...
+  }, [])
 
-// 7. 方法
-function handleSubmit() {...}
-</script>
+  // 8. JSX
+  return <form>...</form>
+}
 ```
 
 ### 3.4 Props 规范
 
 ```typescript
 // ✅ 好：使用 TypeScript 类型定义
-const props = defineProps<{
+interface Props {
   id: number
   title: string
   disabled?: boolean
-}>()
+  onClick?: () => void
+}
 
-// ✅ 好：需要默认值时使用 withDefaults
-const props = withDefaults(defineProps<{
-  title: string
-  size?: 'small' | 'medium' | 'large'
-}>(), {
-  size: 'medium'
-})
+// ✅ 好：需要默认值时使用默认值参数
+function Component({ size = 'medium' }: Props) {
+  // ...
+}
 
-// ❌ 差：使用运行时声明（除非需要复杂验证）
-const props = defineProps({
-  id: {
-    type: Number,
-    required: true
-  }
-})
+// ✅ 好：children 类型
+interface Props {
+  children: React.ReactNode
+}
 ```
 
 ### 3.5 样式规范
 
-```vue
-<!-- ✅ 好：使用 scoped 防止样式污染 -->
-<style scoped>
-.container {
-  padding: 16px;
-}
-</style>
+```tsx
+// ✅ 好：使用 CSS Modules 或 styled-components
+import styles from './UserCard.module.scss'
 
-<!-- ✅ 好：需要穿透组件库样式时 -->
-<style scoped>
-.container :deep(.el-input__inner) {
-  border-radius: 8px;
+export function UserCard() {
+  return <div className={styles.container}>...</div>
 }
-</style>
 
-<!-- ❌ 差：全局样式（除非确实需要） -->
-<style>
-.container {
-  padding: 16px;
+// ✅ 好：使用 Ant Design 的 token
+import { useToken } from 'antd/es/theme'
+
+function Component() {
+  const { token } = useToken()
+  return <div style={{ color: token.colorPrimary }}>...</div>
 }
-</style>
+
+// ❌ 差：全局样式（除非确实需要）
 ```
 
 ---
 
-## 4. 状态管理（Pinia）
+## 4. 状态管理（Zustand）
 
-<!-- [注释] Vue 3 推荐使用 Pinia -->
+<!-- [注释] React 推荐使用 Zustand -->
 
 ### 4.1 Store 定义
 
 ```typescript
-// stores/user.ts
-import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+// stores/userStore.ts
+import { create } from 'zustand'
 import type { User } from '@/types'
 
-export const useUserStore = defineStore('user', () => {
-  // State
-  const user = ref<User | null>(null)
-  const token = ref<string>('')
+interface UserState {
+  user: User | null
+  token: string
+  isLoggedIn: boolean
+  login: (username: string, password: string) => Promise<void>
+  logout: () => void
+}
 
-  // Getters
-  const isLoggedIn = computed(() => !!token.value)
-  const userName = computed(() => user.value?.name ?? '')
+export const useUserStore = create<UserState>((set) => ({
+  user: null,
+  token: '',
+  isLoggedIn: false,
 
-  // Actions
-  async function login(username: string, password: string) {
+  async login(username: string, password: string) {
     const res = await api.login(username, password)
-    token.value = res.token
-    user.value = res.user
-  }
+    set({ token: res.token, user: res.user, isLoggedIn: true })
+  },
 
-  function logout() {
-    token.value = ''
-    user.value = null
-  }
-
-  return {
-    user,
-    token,
-    isLoggedIn,
-    userName,
-    login,
-    logout
-  }
-})
+  logout() {
+    set({ token: '', user: null, isLoggedIn: false })
+  },
+}))
 ```
 
 ### 4.2 在组件中使用
 
-```vue
-<script setup lang="ts">
-import { useUserStore } from '@/stores/user'
-import { storeToRefs } from 'pinia'
+```tsx
+import { useUserStore } from '@/stores/userStore'
 
-const userStore = useUserStore()
+function UserInfo() {
+  // ✅ 好：按需选择状态
+  const user = useUserStore((state) => state.user)
+  const isLoggedIn = useUserStore((state) => state.isLoggedIn)
+  const login = useUserStore((state) => state.login)
 
-// ✅ 好：使用 storeToRefs 保持响应性
-const { user, isLoggedIn } = storeToRefs(userStore)
-
-// ✅ 好：actions 直接解构
-const { login, logout } = userStore
-</script>
+  // ✅ 好：使用 hook
+  const { user, isLoggedIn } = useUserStore()
+}
 ```
 
 ---
@@ -361,8 +341,8 @@ export function updateUser(id: number, data: Partial<User>): Promise<User> {
 ```typescript
 // utils/request.ts
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
-import { useUserStore } from '@/stores/user'
+import { message } from 'antd'
+import { useUserStore } from '@/stores/userStore'
 
 const request = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -381,15 +361,15 @@ request.interceptors.request.use(config => {
 // 响应拦截
 request.interceptors.response.use(
   response => {
-    const { code, message, data } = response.data
+    const { code, message: msg, data } = response.data
     if (code === 0) {
       return data
     }
-    ElMessage.error(message || '请求失败')
-    return Promise.reject(new Error(message))
+    message.error(msg || '请求失败')
+    return Promise.reject(new Error(msg))
   },
   error => {
-    ElMessage.error(error.message || '网络错误')
+    message.error(error.message || '网络错误')
     return Promise.reject(error)
   }
 )
@@ -407,56 +387,56 @@ export default request
 
 | 状态 | 说明 | 示例 |
 |------|------|------|
-| loading | 加载中 | 骨架屏、加载动画 |
-| empty | 空数据 | "暂无数据" 提示 |
-| error | 错误 | 错误信息 + 重试按钮 |
-| disabled | 禁用 | 按钮置灰 |
-| submitting | 提交中 | 按钮 loading + 防重复点击 |
+| loading | 加载中 | Spin、Skeleton |
+| empty | 空数据 | Empty 组件 |
+| error | 错误 | Result + 重试按钮 |
+| disabled | 禁用 | Button disabled |
+| submitting | 提交中 | Button loading + 防重复 |
 
 ### 6.2 示例实现
 
-```vue
-<template>
-  <div class="list-container">
-    <!-- 加载状态 -->
-    <el-skeleton v-if="loading" :rows="5" animated />
+```tsx
+function UserList() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [list, setList] = useState<Item[]>([])
 
-    <!-- 错误状态 -->
-    <el-result v-else-if="error" icon="error" :title="error">
-      <template #extra>
-        <el-button @click="fetchData">重试</el-button>
-      </template>
-    </el-result>
-
-    <!-- 空状态 -->
-    <el-empty v-else-if="list.length === 0" description="暂无数据" />
-
-    <!-- 正常内容 -->
-    <template v-else>
-      <div v-for="item in list" :key="item.id">
-        {{ item.name }}
-      </div>
-    </template>
-  </div>
-</template>
-
-<script setup lang="ts">
-const loading = ref(false)
-const error = ref('')
-const list = ref<Item[]>([])
-
-async function fetchData() {
-  loading.value = true
-  error.value = ''
-  try {
-    list.value = await api.getList()
-  } catch (e) {
-    error.value = e.message || '加载失败'
-  } finally {
-    loading.value = false
+  async function fetchData() {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await api.getList()
+      setList(data)
+    } catch (e) {
+      setError(e.message || '加载失败')
+    } finally {
+      setLoading(false)
+    }
   }
+
+  // 加载状态
+  if (loading) return <Spin />
+
+  // 错误状态
+  if (error) return (
+    <Result
+      status="error"
+      title={error}
+      extra={<Button onClick={fetchData}>重试</Button>}
+    />
+  )
+
+  // 空状态
+  if (list.length === 0) return <Empty description="暂无数据" />
+
+  // 正常内容
+  return (
+    <List
+      dataSource={list}
+      renderItem={item => <List.Item>{item.name}</List.Item>}
+    />
+  )
 }
-</script>
 ```
 
 ---
@@ -469,7 +449,7 @@ async function fetchData() {
 
 - 默认使用 TypeScript，禁止大范围 `any`
 - 必须为 API 响应定义类型
-- 组件 Props 和 Emits 必须有类型定义
+- 组件 Props 必须有类型定义
 
 ### 7.2 类型定义位置
 
@@ -541,26 +521,26 @@ web/
 │   ├── components/          # 通用组件
 │   │   ├── common/         # 基础通用组件
 │   │   └── business/       # 业务通用组件
-│   ├── composables/         # 组合式函数
+│   ├── hooks/               # 自定义 Hooks
 │   │   ├── useAuth.ts
 │   │   └── useTable.ts
 │   ├── layouts/             # 布局组件
-│   │   └── DefaultLayout.vue
+│   │   └── DefaultLayout.tsx
 │   ├── router/              # 路由配置
-│   │   └── index.ts
-│   ├── stores/              # Pinia stores
+│   │   └── index.tsx
+│   ├── stores/              # Zustand stores
 │   │   ├── index.ts
-│   │   └── user.ts
+│   │   └── userStore.ts
 │   ├── types/               # TypeScript 类型
 │   │   └── index.ts
 │   ├── utils/               # 工具函数
 │   │   ├── request.ts
 │   │   └── format.ts
-│   ├── views/               # 页面组件
+│   ├── pages/               # 页面组件
 │   │   ├── home/
 │   │   └── user/
-│   ├── App.vue
-│   └── main.ts
+│   ├── App.tsx
+│   └── main.tsx
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -576,8 +556,7 @@ web/
 ### 9.1 推荐配置
 
 ```bash
-# 安装依赖
-npm install -D eslint prettier eslint-plugin-vue @typescript-eslint/parser
+npm install -D eslint prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
 ```
 
 ### 9.2 常用命令
@@ -604,123 +583,87 @@ npm run format        # 格式化
 
 ### 组件渲染优化
 
-```vue
-<script setup lang="ts">
-import { computed, shallowRef } from 'vue'
+```tsx
+import { useMemo, useCallback, memo } from 'react'
 
-// ✅ 使用 computed 缓存计算结果
-const filteredList = computed(() =>
-  list.value.filter(item => item.active)
-)
+// ✅ 使用 useMemo 缓存计算结果
+const filteredList = useMemo(() =>
+  list.filter(item => item.active)
+, [list])
 
-// ✅ 大列表使用 shallowRef
-const largeList = shallowRef<Item[]>([])
+// ✅ 使用 useCallback 稳定函数引用
+const handleClick = useCallback(() => {
+  // ...
+}, [deps])
 
-// ✅ 使用 v-once 标记静态内容
-// <div v-once>{{ staticContent }}</div>
-
-// ✅ 使用 v-memo 缓存列表项（Vue 3.2+）
-// <div v-for="item in list" :key="item.id" v-memo="[item.id, item.selected]">
-</script>
+// ✅ 使用 memo 避免不必要的重渲染
+export const ExpensiveComponent = memo(({ data }) => {
+  // ...
+})
 ```
 
 ### 列表渲染优化
 
-```vue
-<template>
-  <!-- ✅ 大列表使用虚拟滚动 -->
-  <el-table-v2
-    :columns="columns"
-    :data="data"
-    :height="400"
-    :row-height="50"
-  />
+```tsx
+import { FixedSizeList } from 'react-window'
 
-  <!-- ✅ 或使用第三方虚拟列表 -->
-  <VirtualList
-    :data-key="'id'"
-    :data-sources="list"
-    :data-component="ItemComponent"
-    :estimate-size="50"
-  />
+// ✅ 大列表使用虚拟滚动
+<FixedSizeList
+  height={400}
+  itemCount={1000}
+  itemSize={50}
+  width="100%"
+>
+  {Row}
+/FixedSizeList>
 
-  <!-- ❌ 避免：大列表直接渲染 -->
-  <div v-for="item in hugeList" :key="item.id">
-    {{ item.name }}
-  </div>
-</template>
+// ❌ 避免：大列表直接渲染
+{list.map(item => <div key={item.id}>{item.name}</div>)}
 ```
 
 ### 懒加载
 
-```typescript
+```tsx
+import { lazy, Suspense } from 'react'
+
 // ✅ 路由懒加载
 const routes = [
   {
     path: '/dashboard',
-    component: () => import('@/views/Dashboard.vue')
+    element: <Dashboard />
   }
 ]
 
 // ✅ 组件懒加载
-const HeavyComponent = defineAsyncComponent(() =>
-  import('@/components/HeavyComponent.vue')
-)
+const HeavyComponent = lazy(() => import('@/components/HeavyComponent'))
 
-// ✅ 图片懒加载
-<el-image :src="url" lazy />
+// ✅ Suspense 包裹
+<Suspense fallback={<Spin />}>
+  <HeavyComponent />
+</Suspense>
 
 // ✅ 条件懒加载（仅在需要时加载）
-<template>
-  <HeavyComponent v-if="showHeavy" />
-</template>
-```
-
-### 状态管理优化
-
-```typescript
-// ✅ 按需订阅状态（避免不必要的重渲染）
-const userStore = useUserStore()
-const userName = computed(() => userStore.name)  // 仅订阅 name
-
-// ❌ 差：订阅整个 store
-const { name, age, email, ...rest } = storeToRefs(userStore)
-
-// ✅ 大数据使用 shallowRef
-const tableData = shallowRef<TableRow[]>([])
-function updateData(newData: TableRow[]) {
-  tableData.value = newData  // 替换整个数组
-}
+{showHeavy && <HeavyComponent />}
 ```
 
 ### 网络请求优化
 
 ```typescript
-// ✅ 请求防抖（搜索场景）
-import { useDebounceFn } from '@vueuse/core'
+// ✅ 请求防抖
+import { useDebounceCallback } from 'antd/es/input/hooks'
 
-const debouncedSearch = useDebounceFn((keyword: string) => {
+const debouncedSearch = useDebounceCallback((keyword: string) => {
   api.search(keyword)
 }, 300)
 
-// ✅ 请求缓存
-const cache = new Map<string, { data: any; timestamp: number }>()
-const CACHE_TTL = 5 * 60 * 1000  // 5 分钟
+// ✅ TanStack Query 缓存
+import { useQuery } from '@tanstack/react-query'
 
-async function fetchWithCache(url: string) {
-  const cached = cache.get(url)
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data
-  }
-  const data = await fetch(url).then(r => r.json())
-  cache.set(url, { data, timestamp: Date.now() })
-  return data
-}
-
-// ✅ 取消重复请求
-const controller = new AbortController()
-fetch(url, { signal: controller.signal })
-// 取消：controller.abort()
+const { data } = useQuery({
+  queryKey: ['user', id],
+  queryFn: () => api.getUser(id),
+  staleTime: 5 * 60 * 1000, // 5 分钟内不重新请求
+})
 ```
 
 ### 打包优化
@@ -729,20 +672,12 @@ fetch(url, { signal: controller.signal })
 // vite.config.ts
 export default defineConfig({
   build: {
-    // ✅ 分包策略
     rollupOptions: {
       output: {
         manualChunks: {
-          'vendor': ['vue', 'vue-router', 'pinia'],
-          'element-plus': ['element-plus'],
+          'vendor': ['react', 'react-router', 'zustand'],
+          'antd': ['antd'],
         }
-      }
-    },
-    // ✅ 压缩配置
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,  // 生产环境移除 console
       }
     }
   }
@@ -754,11 +689,10 @@ export default defineConfig({
 | 陷阱 | 解决方案 |
 |------|---------|
 | 大列表直接渲染 | 使用虚拟滚动 |
-| 频繁触发计算属性 | 检查依赖是否过多 |
-| 未使用 key 或 key 不稳定 | 使用唯一稳定的 key |
-| 在模板中调用方法 | 改用 computed |
-| 监听整个对象 | 使用 `{ deep: false }` 或监听具体属性 |
-| 未取消的请求/定时器 | 在 onUnmounted 中清理 |
+| 频繁触发计算 | 检查 useMemo 依赖 |
+| key 不稳定 | 使用唯一稳定的 key |
+| 监听整个对象 | 使用 useMemo 替代 |
+| 未取消的请求 | useEffect 中返回清理函数 |
 
 ### 性能分析工具
 
@@ -766,11 +700,10 @@ export default defineConfig({
 # Chrome DevTools
 # - Performance 面板：录制运行时性能
 # - Lighthouse：整体性能评分
-# - Vue DevTools：组件渲染性能
+# - React DevTools：组件渲染性能
 
 # 打包分析
 npm install -D rollup-plugin-visualizer
-# 然后在 vite.config.ts 中配置
 ```
 
 ---
@@ -786,25 +719,15 @@ npm install -D rollup-plugin-visualizer
 示例：
 ```
 > 📋 本回复遵循规则：`frontend-style.md` - UI 视觉风格
-> 📋 本回复遵循规则：`frontend-style.md` - Vue 编码规范
-```
-
----
-
-## 规则溯源要求
-
-当回复明确受到本规则约束时，在回复末尾声明：
-
-```
-> 📋 本回复遵循规则：`frontend-style.md` - [具体章节]
+> 📋 本回复遵循规则：`frontend-style.md` - React 编码规范
 ```
 
 ---
 
 ## 参考资料
 
-- [Vue 3 官方文档](https://vuejs.org/)
-- [Vue 风格指南](https://vuejs.org/style-guide/)
-- [Element Plus](https://element-plus.org/)
-- [Pinia 官方文档](https://pinia.vuejs.org/)
+- [React 官方文档](https://react.dev/)
+- [React Hooks](https://react.dev/reference/react)
+- [Ant Design](https://ant.design/)
+- [Zustand](https://zustand-demo.pmnd.rs/)
 - [TypeScript 官方文档](https://www.typescriptlang.org/)

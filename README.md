@@ -120,13 +120,13 @@ cp .claude/CLAUDE.md ~/.claude/
 | 技能 | 触发条件 | 提供的帮助 |
 |------|---------|-----------|
 | `java-dev` | 操作 `.java` 文件 | 命名约定、异常处理、Spring 规范、不可变集合、线程池、代码模式 |
-| `frontend-dev` | 操作 `.vue/.tsx/.css` 等 | UI 风格约束、Vue/React 规范、TypeScript |
+| `frontend-dev` | 操作 `.tsx/.jsx/.css` 等 | UI 风格约束、React/Vue 规范、TypeScript |
 | `bash-style` | 操作 `.sh/Dockerfile/Makefile/.md` 等 | 注释规范、tee 写入、heredoc、脚本规范 |
 | `ops-safety` | 执行系统命令、服务器运维 | 风险说明、回滚方案、问题排查原则 |
 
 **效果示例**：
 
-- 写 Vue 组件时，自动使用 Composition API + TypeScript
+- 写 React 组件时，自动使用 Hooks + TypeScript
 - 不操作这些文件时，不消耗额外 token
 
 ### 中费力（显式调用）- Commands
@@ -297,8 +297,8 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 #### 安装命令
 
 ```bash
-# TypeScript/JavaScript + Vue
-npm install -g typescript typescript-language-server @vue/language-server
+# TypeScript/JavaScript + React
+npm install -g typescript-language-server
 
 # Java (macOS)
 brew install jdtls
@@ -396,7 +396,7 @@ claude
 > /fix 测试问题
 
 # 测试技能（操作相关文件类型）
-> 帮我看看这个 Java 代码有什么问题
+> 帮我看看这个 React 组件有什么问题
 
 # 检查配置加载
 > /memory

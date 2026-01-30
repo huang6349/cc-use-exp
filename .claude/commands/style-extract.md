@@ -3,7 +3,7 @@ description: 从代码或设计图提取样式变量
 allowed-tools: Read, Grep, Glob
 ---
 
-从 Vue 组件或设计图中提取样式规范。
+从 React 组件或设计图中提取样式规范。
 
 ## 输入
 
@@ -13,7 +13,7 @@ allowed-tools: Read, Grep, Glob
 | 输入 | 示例 | 说明 |
 |------|------|------|
 | 目录 | `web/src` | 扫描所有样式文件 |
-| 文件 | `Card.vue` | 分析单个组件 |
+| 文件 | `Card.tsx` | 分析单个组件 |
 | 图片 | `design.png` | 识别设计稿样式 |
 | 空 | | 默认扫描 `web/src` |
 
@@ -24,15 +24,15 @@ allowed-tools: Read, Grep, Glob
 ### A1. 扫描样式文件
 
 查找以下文件：
-- `*.vue` 中的 `<style>` 块
-- `*.css` / `*.scss` 文件
-- Element Plus 主题变量覆盖
+- `*.tsx` / `*.jsx` 中的样式
+- `*.css` / `*.scss` / `*.module.scss` 文件
+- Ant Design 主题变量覆盖
 
 ### A2. 提取变量
 
 | 类别 | 提取内容 |
 |------|---------|
-| 颜色 | `--el-color-*`、自定义颜色变量 |
+| 颜色 | `--ant-color-*`、自定义颜色变量 |
 | 字体 | `font-size`、`font-family`、`font-weight` |
 | 间距 | `padding`、`margin`、`gap` 常用值 |
 | 圆角 | `border-radius` 常用值 |

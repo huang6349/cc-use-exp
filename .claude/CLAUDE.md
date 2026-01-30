@@ -8,7 +8,7 @@
 
 ## 个人身份
 
-全栈开发者，主要技术栈：Java、Vue + TypeScript、SQLite/MySQL/PostgreSQL
+全栈开发者，主要技术栈：Java、React + TypeScript、SQLite/MySQL/PostgreSQL
 
 ---
 
@@ -28,7 +28,7 @@
 | 场景 | 首选 | 备选 |
 |------|------|------|
 | Java 后端 | Spring Boot | - |
-| 前端 | Vue 3 + TS + Vite + Element Plus | React + Ant Design |
+| 前端 | React + TS + Vite + Ant Design | Vue 3 + Element Plus |
 | 数据库 | SQLite (轻量) / MySQL (生产) | PostgreSQL |
 | 缓存 | Redis | - |
 

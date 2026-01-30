@@ -32,9 +32,9 @@
 | Web 框架 | Spring Boot / Express | x.x+ |
 | ORM | JPA / Prisma | x.x+ |
 | 数据库 | SQLite / MySQL / PostgreSQL | x.x |
-| 前端框架 | Vue / React | x.x+ |
+| 前端框架 | React / Vue | x.x+ |
 | 前端语言 | TypeScript | x.x+ |
-| UI 组件库 | Element Plus / Ant Design | x.x+ |
+| UI 组件库 | Ant Design / Element Plus | x.x+ |
 | 构建工具 | Vite / Webpack | x.x+ |
 
 ---
@@ -54,7 +54,7 @@
 ├── web/ / frontend/            # 前端代码（如有）
 │   ├── src/
 │   │   ├── components/         # 组件
-│   │   ├── views/ / pages/     # 页面
+│   │   ├── pages/ / views/     # 页面
 │   │   ├── api/                # API 调用
 │   │   └── stores/             # 状态管理
 │   └── package.json
@@ -106,7 +106,7 @@ public class Result<T> {
 
 | 约定 | 说明 |
 |------|------|
-| UI 风格 | [Element Plus / Ant Design] 默认主题 |
+| UI 风格 | [Ant Design / Element Plus] 默认主题 |
 | 设计原则 | 降低用户操作费力度，信息密度适中 |
 | 避免 | 花哨装饰、渐变背景、复杂动效 |
 
