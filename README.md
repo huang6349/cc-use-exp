@@ -23,10 +23,9 @@
 
 - [项目定位](#项目定位)
 - [快速部署](#快速部署)
-- **Part 1: Claude Code**
-    - [快速开始](#1-快速开始)
-    - [常见场景速查](#2-常见场景速查)
-    - [目录结构](#5-目录结构)
+- [快速开始](#快速开始)
+- [常见场景速查](#常见场景速查)
+- [目录结构](#目录结构)
 - [社区与支持](#社区与支持)
 - [许可声明](#许可声明)
 
@@ -91,13 +90,9 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ---
 
-# Part 1: Claude Code 配置
+## 快速开始
 
----
-
-## 1. 快速开始
-
-### 1.1 零费力（自动生效）- Rules
+### 零费力（自动生效）- Rules
 
 **你需要做什么：什么都不用做**
 
@@ -116,7 +111,7 @@ cp .claude/CLAUDE.md ~/.claude/
 - 执行 `sysctl` 等危险命令前会提示风险和回滚方案
 - 新增命令后会提醒你更新 README
 
-### 1.2 低费力（自动触发）- Skills
+### 低费力（自动触发）- Skills
 
 **你需要做什么：正常写代码**
 
@@ -137,7 +132,7 @@ cp .claude/CLAUDE.md ~/.claude/
 - 写 Vue 组件时，自动使用 Composition API + TypeScript
 - 不操作这些文件时，不消耗额外 token
 
-### 1.3 中费力（显式调用）- Commands
+### 中费力（显式调用）- Commands
 
 **你需要做什么：输入 `/命令名`**
 
@@ -173,7 +168,7 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ---
 
-## 2. 常见场景速查
+## 常见场景速查
 
 | 场景 | 推荐方式 | 费力度 |
 |------|---------|--------|
@@ -204,15 +199,15 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ---
 
-## 3. 最佳实践
+## 最佳实践
 
-### 3.1 让自动化为你工作
+### 让自动化为你工作
 
 - **不要干预 Rules**：它们在后台保护你，比如防止 Claude 修改测试
 - **不要手动加载 Skills**：操作相关文件时自动生效
 - **相信防御机制**：复杂任务会自动要求确认计划后再执行
 
-### 3.2 避免的做法
+### 避免的做法
 
 - ❌ 不要绕过 Rules 的保护机制
 - ❌ 不要在简单任务上使用复杂命令
@@ -220,7 +215,7 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ---
 
-## 4. 常见问题
+## 常见问题
 
 ### Q: 为什么 Claude 总是先说明计划再执行？
 
@@ -241,7 +236,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 
 ---
 
-## 5. 目录结构
+## 目录结构
 
 ```
 .claude/
@@ -298,7 +293,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 
 ---
 
-## 6. 开发指南
+## 开发指南
 
 ### LSP 服务器配置（v2.0.67+ 支持）
 
@@ -420,7 +415,7 @@ claude
 
 ---
 
-## 7. 部署方法
+## 部署方法
 
 ### 工作原理
 
@@ -459,11 +454,11 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ---
 
-## 8. 版本记录
+## 版本记录
 
 ---
 
-## 9. 参考资料
+## 参考资料
 
 - [Claude Code 官方文档](https://docs.anthropic.com/claude-code)
 
@@ -475,10 +470,6 @@ cp .claude/CLAUDE.md ~/.claude/
 
 - [Issues](https://github.com/doccker/cc-use-exp/issues) - 报告问题
 - [Pull Requests](https://github.com/doccker/cc-use-exp/pulls) - 贡献代码
-
-### 联系作者
-
-- Email: doccker@pm.me
 
 ---
 
