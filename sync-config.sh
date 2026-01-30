@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 同步 .claude 和 .gemini 配置到用户根目录
+# 同步 .claude 配置到用户根目录
 
 # 颜色输出
 RED='\033[0;31m'
@@ -16,7 +16,7 @@ HOME_DIR="${HOME}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 需要同步的目录
-SYNC_DIRS=(".claude" ".gemini")
+SYNC_DIRS=(".claude")
 
 # 全局覆盖策略（空表示每次询问，yes表示全部覆盖，no表示全部跳过）
 OVERWRITE_ALL=""

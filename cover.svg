@@ -10,27 +10,19 @@
       .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 500; text-anchor: middle; }
     </style>
   </defs>
-  
+
   <!-- Background -->
   <rect width="800" height="400" fill="url(#bg)" rx="12" />
-  
+
   <!-- Abstract Design Elements -->
-  <!-- Left: Claude Theme (Warm/Orange) -->
-  <circle cx="280" cy="160" r="70" fill="#334155" opacity="0.3" />
-  <circle cx="280" cy="160" r="50" fill="#da7756" />
-  <text x="280" y="260" class="label" fill="#da7756">Claude Code</text>
-
-  <!-- Center: Plus -->
-  <text x="400" y="175" class="title" style="font-size: 40px; fill: #475569;">&amp;</text>
-
-  <!-- Right: Gemini Theme (Cool/Blue-Purple) -->
-  <circle cx="520" cy="160" r="70" fill="#334155" opacity="0.3" />
-  <circle cx="520" cy="160" r="50" fill="#4b8bf5" />
-  <text x="520" y="260" class="label" fill="#4b8bf5">Gemini CLI</text>
+  <!-- Center: Claude Theme (Warm/Orange) -->
+  <circle cx="400" cy="160" r="70" fill="#334155" opacity="0.3" />
+  <circle cx="400" cy="160" r="50" fill="#da7756" />
+  <text x="400" y="260" class="label" fill="#da7756">Claude Code</text>
 
   <!-- Main Title -->
   <text x="400" y="320" class="title">AI 编码助手配置中心</text>
-  
+
   <!-- Subtitle -->
   <text x="400" y="360" class="subtitle">开箱即用的配置模板与最佳实践</text>
 </svg>

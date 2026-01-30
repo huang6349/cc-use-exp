@@ -5,14 +5,13 @@
 <!-- 封面图 -->
 <img src="./cover.svg" alt="AI 编码助手配置中心" width="100%" style="max-width: 800px" />
 
-> 让 Claude Code 和 Gemini CLI 开箱即用的配置模板
+> 让 Claude Code 开箱即用的配置模板
 >
 > 按费力度从低到高，用最少操作获得最大帮助
 
 [![version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/doccker/cc-use-exp)
 [![license](https://img.shields.io/badge/license-Custom-green.svg)](./LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude_Code-Config-orange.svg)](https://docs.anthropic.com/claude-code)
-[![Gemini CLI](https://img.shields.io/badge/Gemini_CLI-Config-purple.svg)](https://github.com/google-gemini/gemini-cli)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/doccker/cc-use-exp/pulls)
 
 </div>
@@ -28,9 +27,6 @@
   - [快速开始](#1-快速开始)
   - [常见场景速查](#2-常见场景速查)
   - [目录结构](#5-目录结构)
-- **Part 2: Gemini CLI**
-  - [快速开始](#1-快速开始-1)
-  - [前端场景速查](#2-前端场景速查)
 - [社区与支持](#社区与支持)
 - [许可声明](#许可声明)
 
@@ -40,54 +36,11 @@
 
 ## 项目定位
 
-### 使用架构
-
-```
-本项目                      用户目录                    其他项目
-├── .claude/  ──覆盖──>    ~/.claude/  <──读取──      .claude/ (空)
-└── .gemini/  ──覆盖──>    ~/.gemini/  <──读取──      .gemini/ (空)
-```
+本项目用于 Claude Code 配置的开发与维护。
 
 - **本项目**：配置开发/维护环境，不参与实际业务开发
 - **用户目录**：实际生效的配置
 - **其他项目**：配置目录为空，自动使用用户目录配置
-
-### 两套配置的关系
-
-| 目录 | 服务对象 | 说明 |
-|------|---------|------|
-| `.claude/` | Claude Code | Anthropic 的 CLI 工具 |
-| `.gemini/` | Gemini CLI | Google 的 CLI 工具 |
-
-**两者完全独立**：
-- Claude Code 只读取 `~/.claude/`，不读取 `~/.gemini/`
-- Gemini CLI 只读取 `~/.gemini/`，不读取 `~/.claude/`
-- 配置内容可能相似（如禁止行为、技术栈偏好），但这不是重复，而是各自需要的独立配置
-
-### 配置能力差异
-
-| 特性 | Claude Code | Gemini CLI |
-|------|-------------|------------|
-| 主配置文件 | `.claude/CLAUDE.md` | `.gemini/GEMINI.md` |
-| 规则目录 | `.claude/rules/` ✅ | 不支持 ❌ |
-| 技能目录 | `.claude/skills/` ✅ | 不支持 ❌ |
-| 命令目录 | `.claude/commands/` (.md) | `.gemini/commands/` (.toml) |
-| 命令格式 | Markdown | TOML |
-
-**规则同步方式**：
-- Claude Code：规则拆分到 `rules/` 目录，按文件组织
-- Gemini CLI：所有规则必须写在 `GEMINI.md` 一个文件中
-
-> 如需在两个工具间同步规则（如禁止行尾注释），需分别在 `.claude/rules/bash-style.md` 和 `.gemini/GEMINI.md` 中维护。
-
----
-
-## 支持的工具
-
-| 工具 | 配置目录 | 部署位置 | 状态 |
-|------|---------|---------|------|
-| Claude Code | `.claude/` | `~/.claude/` | ✅ 完整支持 |
-| Gemini CLI | `.gemini/` | `~/.gemini/` | ✅ 基础支持 |
 
 ---
 
@@ -105,7 +58,7 @@
 sync-config.bat
 ```
 
-脚本会自动将 `.claude/` 和 `.gemini/` 同步到用户根目录（`~/.claude/` 和 `~/.gemini/`），文件冲突时提供以下选项：
+脚本会自动将 `.claude/` 同步到用户根目录（`~/.claude/`），文件冲突时提供以下选项：
 
 | 选项 | 按键 | 说明 |
 |------|------|------|
@@ -131,19 +84,7 @@ cp .claude/CLAUDE.md ~/.claude/
 ```
 </details>
 
-<details>
-<summary><strong>Gemini CLI</strong></summary>
-
-```bash
-# 只覆盖配置，保留认证信息
-rm -rf ~/.gemini/commands
-cp -r .gemini/commands ~/.gemini/
-cp .gemini/GEMINI.md ~/.gemini/
-cp .gemini/settings.json ~/.gemini/
-```
-</details>
-
-> **注意**：Claude Code 的 `~/.claude/` 包含历史记录（`history.jsonl`、`projects/` 等），不能整体删除，只覆盖配置目录。Gemini CLI 的 `~/.gemini/` 包含认证信息（`oauth_creds.json`、`google_accounts.json`），同样只覆盖配置。
+> **注意**：Claude Code 的 `~/.claude/` 包含历史记录（`history.jsonl`、`projects/` 等），不能整体删除，只覆盖配置目录。
 
 ---
 
@@ -516,320 +457,6 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ## 9. 参考资料
 - [Claude Code 官方文档](https://docs.anthropic.com/claude-code)
-
----
-
-# Part 2: Gemini CLI 配置（前端设计）
-
-> **定位**：Gemini CLI 专注于前端设计和开发，技术栈为 Vue 3 + TypeScript + Element Plus。
-
----
-
-## 1. 快速开始
-
-### 1.1 零费力（自动生效）- GEMINI.md
-
-**你需要做什么：什么都不用做**
-
-GEMINI.md 自动加载，提供以下保护：
-
-| 规则 | 作用 |
-|------|------|
-| UI 风格约束 | 禁止霓虹渐变、玻璃拟态、赛博风 |
-| 代码质量 | 完整实现，禁止 MVP/占位/TODO |
-| 中文交流 | 统一使用中文回复和注释 |
-| MCP 工具指南 | 规范工具调用，避免滥用 |
-
-**效果示例**：
-- Gemini 不会生成"AI 风格"的炫酷 UI
-- 默认使用 Element Plus 主题，保持企业后台风格
-- 自动使用 Composition API + TypeScript
-
-### 1.2 中费力（显式调用）- Commands
-
-**你需要做什么：输入 `/命令名`**
-
-| 命令 | 用途 | 使用示例 |
-|------|------|---------|
-| `/layout` | 重构页面布局 | `/layout src/views/Home.vue` |
-| `/layout-check` | 检查页面布局一致性 | `/layout-check src/views/` |
-| `/vue-split` | 拆分大型 Vue 文件 | `/vue-split src/views/Home.vue` |
-| `/fix` | 快速修复前端 Bug | `/fix 按钮点击无响应` |
-| `/code-review` | 审查前端代码 | `/code-review` |
-| `/quick-review` | 快速审查 | `/quick-review` |
-| `/debug` | 复杂问题排查 | `/debug 表格数据不显示` |
-
----
-
-## 2. 前端场景速查
-
-| 场景 | 推荐方式 | 费力度 |
-|------|---------|--------|
-| 写 Vue 组件 | 直接写，规则自动生效 | ⭐ |
-| 页面布局重构 | `/layout 文件路径` | ⭐⭐ |
-| 布局一致性检查 | `/layout-check` | ⭐⭐ |
-| Vue 文件过大 | `/vue-split 文件路径` | ⭐⭐ |
-| 修复样式问题 | `/fix 问题描述` | ⭐⭐ |
-| 组件代码审查 | `/code-review` | ⭐⭐ |
-| 查 Vue/Element 文档 | 让 Gemini 调用 Context7 | ⭐ |
-| 响应式适配 | 描述断点需求 | ⭐⭐ |
-| 复杂交互调试 | `/debug 问题描述` | ⭐⭐⭐ |
-
-```
-布局问题？
-├─ 简单调整 → /fix 问题描述
-├─ 整体重构 → /layout 文件路径
-└─ 一致性检查 → /layout-check
-
-组件开发？
-├─ 新组件 → 描述需求，让 Gemini 生成
-└─ 改现有 → 先 /code-review，再修改
-
-样式问题？
-├─ 单个元素 → /fix 样式描述
-└─ 整体风格 → 检查是否符合 Element Plus 规范
-```
-
----
-
-## 3. 最佳实践
-
-### 3.1 UI 风格约束
-
-**后台管理系统（默认风格）**
-
-| 要素 | 要求 |
-|------|------|
-| 主题 | Element Plus 默认主题 |
-| 配色 | 黑白灰为主 + 1 个主色点缀 |
-| 布局 | 标准后台布局（侧边栏 + 顶栏 + 内容区） |
-| 动效 | 克制，仅保留必要交互反馈 |
-
-**严格禁止**：
-- ❌ 蓝紫色霓虹渐变、发光描边
-- ❌ 玻璃拟态（glassmorphism）
-- ❌ 赛博风、暗黑科技风
-- ❌ 大面积渐变、装饰性几何图形
-- ❌ UI 文案中使用 emoji
-
-### 3.2 Vue 组件规范
-
-```vue
-<!-- ✅ 推荐写法 -->
-<script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { User } from '@/types'
-
-const props = defineProps<{
-  userId: number
-}>()
-
-const loading = ref(false)
-const user = ref<User | null>(null)
-</script>
-
-<template>
-  <div class="user-card">
-    <!-- 内容 -->
-  </div>
-</template>
-
-<style scoped>
-.user-card {
-  padding: 16px;
-}
-</style>
-```
-
-### 3.3 MCP 工具使用
-
-| 工具 | 使用场景 | 技巧 |
-|------|---------|------|
-| Context7 | 查 Vue/Element Plus 文档 | 先 `resolve-library-id`，再查文档 |
-| Desktop Commander | 批量修改组件文件 | 设置路径范围，避免全仓扫描 |
-| Sequential-Thinking | 复杂页面设计 | 规划前必用 |
-
-**Context7 查询示例**：
-```
-帮我查一下 Element Plus 的 Table 组件如何实现可编辑单元格
-```
-
-### 3.4 避免的做法
-
-- ❌ 不要让 Gemini 自由发挥 UI 设计
-- ❌ 不要忽略 Element Plus 现有组件
-- ❌ 不要在简单问题上用复杂命令
-- ❌ 不要跳过代码审查直接提交
-
----
-
-## 4. 常见问题
-
-### Q: Gemini 生成的 UI 太花哨怎么办？
-
-A: GEMINI.md 中已有 UI 风格约束。如果还是生成花哨样式，可以明确说：
-```
-请使用 Element Plus 默认主题，保持简洁的后台管理风格，不要使用渐变和装饰性元素
-```
-
-### Q: 如何让 Gemini 查最新的 Vue 文档？
-
-A: Gemini 会自动调用 Context7 查询文档。你也可以直接说：
-```
-帮我查一下 Vue 3 的 defineModel 怎么用
-```
-
-### Q: /layout 命令支持什么输入？
-
-A: 支持以下输入方式：
-- 文件路径：`/layout src/views/Home.vue`
-- URL：`/layout https://example.com`
-- 描述需求：`/layout 把这个页面改成左右两栏布局`
-
-### Q: 组件太复杂，Gemini 生成不完整怎么办？
-
-A: 分步骤处理：
-1. 先让 Gemini 生成组件框架
-2. 逐个功能点完善
-3. 最后 `/code-review` 检查
-
----
-
-## 5. 目录结构
-
-```
-.gemini/
-├── GEMINI.md           # 核心规则（前端聚焦，~130行）
-├── settings.json       # 用户设置
-└── commands/           # 自定义命令（.toml 格式）
-    ├── layout.toml     # 布局重构
-    ├── fix.toml        # 快速修复
-    ├── code-review.toml
-    ├── quick-review.toml
-    └── debug.toml
-```
-
----
-
-## 6. 配置层级
-
-Gemini CLI 支持层级配置，优先级从低到高：
-
-1. 系统默认 → `/etc/gemini-cli/`
-2. **用户全局** → `~/.gemini/`
-3. **项目级** → `<project>/.gemini/`
-4. 环境变量
-5. 命令行参数
-
-GEMINI.md 同样支持层级：
-- 全局：`~/.gemini/GEMINI.md`
-- 项目：`<project>/GEMINI.md`
-- 子目录：`<subdir>/GEMINI.md`
-
----
-
-## 7. 认证配置
-
-Gemini CLI 需要认证才能使用，支持两种认证方式。
-
-### 认证方式对比
-
-| 方式 | 适用场景 | 优点 | 缺点 |
-|------|---------|------|------|
-| **OAuth 登录** | edu 账号、企业账号 | 配额更高、无需管理密钥 | 首次需浏览器认证 |
-| **API Key** | 个人账号、自动化场景 | 配置简单、无需浏览器 | 免费配额有限 |
-
-> **建议**：edu 账号或企业账号优先使用 OAuth 登录，可获得更高的使用配额。
-
-### 方式 A：OAuth 登录（推荐 edu/企业账号）
-
-首次启动时会自动跳转浏览器认证：
-
-```bash
-gemini
-# 浏览器会打开 Google 登录页面
-# 登录后授权即可，之后会自动保存凭证
-```
-
-认证信息保存在 `~/.gemini/` 目录下，后续启动无需重复认证。
-
-### 方式 B：API Key（推荐个人账号）
-
-#### 获取 API Key
-
-1. 访问 [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. 登录 Google 账号
-3. 点击 "Create API Key" 创建密钥
-4. 复制生成的密钥
-
-#### 配置 API Key
-
-```bash
-# 将密钥写入 ~/.gemini/.env（推荐）
-echo 'GEMINI_API_KEY="你的API密钥"' >> ~/.gemini/.env
-```
-
-或者添加到 shell 配置文件：
-
-```bash
-# ~/.zshrc 或 ~/.bashrc
-export GEMINI_API_KEY="你的API密钥"
-
-# 重新加载配置
-source ~/.zshrc
-```
-
-### 验证认证
-
-```bash
-gemini
-# 如果不再跳转浏览器认证，说明配置成功
-```
-
-> **注意**：API Key 是敏感信息，请勿提交到代码仓库或分享给他人。
-
----
-
-## 8. 部署方法
-
-### 首次部署
-
-```bash
-# 1. 如果 ~/.gemini 不存在，先创建
-[ ! -d ~/.gemini ] && mkdir -p ~/.gemini
-
-# 2. 覆盖配置，保留认证信息
-rm -rf ~/.gemini/commands
-cp -r .gemini/commands ~/.gemini/
-cp .gemini/GEMINI.md ~/.gemini/
-cp .gemini/settings.json ~/.gemini/
-
-# 3. 验证
-gemini
-# 输入 /layout 测试命令是否可用
-```
-
-### 更新部署
-
-```bash
-# 只覆盖配置，保留认证
-rm -rf ~/.gemini/commands
-cp -r .gemini/commands ~/.gemini/
-cp .gemini/GEMINI.md ~/.gemini/
-cp .gemini/settings.json ~/.gemini/
-```
-
-> **注意**：只覆盖配置文件（`commands/`、`GEMINI.md`、`settings.json`），保留认证信息（`oauth_creds.json`、`google_accounts.json`）和运行时数据（`installation_id`、`state.json`）。
-
----
-
-## 9. 参考资料
-
-- [Gemini CLI 官方文档](https://geminicli.com/docs/)
-- [Gemini CLI GitHub](https://github.com/google-gemini/gemini-cli)
-- [Gemini CLI 认证指南](https://geminicli.com/docs/get-started/authentication/)
-- [Vue 3 官方文档](https://vuejs.org/)
-- [Element Plus 文档](https://element-plus.org/)
 
 ---
 

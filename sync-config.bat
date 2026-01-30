@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM 同步 .claude 和 .gemini 配置到用户根目录
+REM 同步 .claude 配置到用户根目录
 
 REM 获取用户根目录
 set "HOME_DIR=%USERPROFILE%"
@@ -11,7 +11,7 @@ set "SCRIPT_DIR=%~dp0"
 set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
 REM 需要同步的目录
-set "SYNC_DIRS=.claude .gemini"
+set "SYNC_DIRS=.claude"
 
 REM 全局覆盖策略（空表示每次询问，yes表示全部覆盖，no表示全部跳过）
 set "OVERWRITE_ALL="

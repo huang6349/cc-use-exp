@@ -11,18 +11,17 @@ description: 扫描项目生成配置（CLAUDE.md/restart.sh/ignore/Docker）
 | 1 | `.claude/CLAUDE.md` | 项目配置 | 直接生成 |
 | 2 | `restart.sh` | 前后端打包+启动脚本 | 直接生成 |
 | 3 | `.claudeignore` | Claude Code 忽略 | 直接生成 |
-| 4 | `.geminiignore` | Gemini CLI 忽略 | **必须生成**，内容复制自 `.claudeignore` |
-| 5 | `.gitignore` | Git 忽略 | 直接生成 |
-| 6 | `.dockerignore` | Docker 忽略 | 直接生成 |
-| 7 | `Dockerfile` | 容器构建 | 直接生成 |
-| 8 | `docker-compose.yml` | 容器编排 | 直接生成 |
-| 9 | `README.md` | 项目说明 | 直接生成（如不存在或用户选择覆盖） |
+| 4 | `.gitignore` | Git 忽略 | 直接生成 |
+| 5 | `.dockerignore` | Docker 忽略 | 直接生成 |
+| 6 | `Dockerfile` | 容器构建 | 直接生成 |
+| 7 | `docker-compose.yml` | 容器编排 | 直接生成 |
+| 8 | `README.md` | 项目说明 | 直接生成（如不存在或用户选择覆盖） |
 
 ---
 
 ## 忽略文件内容规范
 
-### .claudeignore / .geminiignore（必须包含）
+### .claudeignore（必须包含）
 
 ```
 # 依赖目录
@@ -117,7 +116,7 @@ __tests__/
 **数据库**: [检测结果]
 **前后端分离**: [是/否]
 
-即将生成 9 个文件，是否继续？[Y/n]
+即将生成 8 个文件，是否继续？[Y/n]
 ```
 
 ### 步骤 3：逐个生成文件
@@ -163,7 +162,6 @@ chmod +x restart.sh
 ✅ .claude/CLAUDE.md
 ✅ restart.sh
 ✅ .claudeignore
-✅ .geminiignore
 ✅ .gitignore
 ✅ .dockerignore
 ✅ Dockerfile
