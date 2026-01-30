@@ -24,9 +24,9 @@
 - [项目定位](#项目定位)
 - [快速部署](#快速部署)
 - **Part 1: Claude Code**
-  - [快速开始](#1-快速开始)
-  - [常见场景速查](#2-常见场景速查)
-  - [目录结构](#5-目录结构)
+    - [快速开始](#1-快速开始)
+    - [常见场景速查](#2-常见场景速查)
+    - [目录结构](#5-目录结构)
 - [社区与支持](#社区与支持)
 - [许可声明](#许可声明)
 
@@ -49,11 +49,13 @@
 ### 一键同步（推荐）
 
 **macOS/Linux**：
+
 ```bash
 ./sync-config.sh
 ```
 
 **Windows**：
+
 ```cmd
 sync-config.bat
 ```
@@ -82,6 +84,7 @@ cp -r .claude/templates ~/.claude/
 cp -r .claude/tasks ~/.claude/
 cp .claude/CLAUDE.md ~/.claude/
 ```
+
 </details>
 
 > **注意**：Claude Code 的 `~/.claude/` 包含历史记录（`history.jsonl`、`projects/` 等），不能整体删除，只覆盖配置目录。
@@ -108,6 +111,7 @@ cp .claude/CLAUDE.md ~/.claude/
 | `bash-style.md` | Bash 核心规范：禁止行尾注释 | 始终生效（详细规范见 skills） |
 
 **效果示例**：
+
 - Claude 不会修改测试来适配错误代码
 - 执行 `sysctl` 等危险命令前会提示风险和回滚方案
 - 新增命令后会提醒你更新 README
@@ -128,6 +132,7 @@ cp .claude/CLAUDE.md ~/.claude/
 | `ops-safety` | 执行系统命令、服务器运维 | 风险说明、回滚方案、问题排查原则 |
 
 **效果示例**：
+
 - 写 Go 代码时，自动遵循 Effective Go 规范
 - 写 Vue 组件时，自动使用 Composition API + TypeScript
 - 不操作这些文件时，不消耗额外 token
@@ -219,7 +224,8 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ### Q: 为什么 Claude 总是先说明计划再执行？
 
-A: 这是 `claude-code-defensive.md` 规则的要求。复杂任务（超过 3 个步骤或涉及多个文件）必须先说明计划，等你确认后再执行。这是为了防止 Claude 盲目修改代码。
+A: 这是 `claude-code-defensive.md` 规则的要求。复杂任务（超过 3 个步骤或涉及多个文件）必须先说明计划，等你确认后再执行。这是为了防止
+Claude 盲目修改代码。
 
 ### Q: 为什么执行系统命令时 Claude 会问很多问题？
 
@@ -280,6 +286,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 | Token 消耗 | 始终消耗 | 按需消耗 |
 
 **最佳实践**：
+
 - Rules 保持精简（核心禁止项），详细规范放 Skills
 - 例如 `bash-style`：rules 放 37 行核心规则，skills 放 200+ 行完整规范
 
@@ -359,6 +366,7 @@ description: 命令的简要描述
 ## 流程
 
 ### 第 1 步：...
+
 ### 第 2 步：...
 
 ## 输出格式
@@ -456,6 +464,7 @@ cp .claude/CLAUDE.md ~/.claude/
 ---
 
 ## 9. 参考资料
+
 - [Claude Code 官方文档](https://docs.anthropic.com/claude-code)
 
 ---
