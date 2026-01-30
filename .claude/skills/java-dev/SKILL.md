@@ -46,6 +46,7 @@ mvn verify                           # 运行所有检查
 
 ```java
 public class Example {
+    
     // 1. 静态常量
     public static final String CONSTANT = "value";
 
@@ -59,13 +60,19 @@ public class Example {
     public Example() { }
 
     // 5. 静态方法
-    public static Example create() { return new Example(); }
+    public static Example create() {
+        return new Example();
+    }
 
-    // 6. 实例方法（公共 → 私有）
-    public void doSomething() { }
-    private void helperMethod() { }
+    // 6. 实例方法（公共）
+    public void doSomething() {
+    }
 
-    // 7. getter/setter（或使用 Lombok）
+    // 7. 实例方法（私有）
+    private void helperMethod() {
+    }
+
+    // 8. getter/setter（或使用 Lombok）
 }
 ```
 
@@ -135,6 +142,7 @@ new Thread(() -> doWork()).start();
 
 ```java
 class UserServiceTest {
+    
     @Test
     @DisplayName("根据 ID 查找用户 - 用户存在时返回用户")
     void findById_whenUserExists_returnsUser() {
@@ -156,12 +164,15 @@ class UserServiceTest {
 ## Spring Boot 规范
 
 ```java
-// ✅ 构造函数注入
+// ✅ 字段注入
+@Getter
 @Service
-@RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final EmailService emailService;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 }
 
 // ✅ REST Controller
