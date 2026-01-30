@@ -16,7 +16,7 @@ paths:
 
 # 前端开发规范
 
-> 参考来源: React 官方文档、Ant Design 最佳实践
+> 参考来源: React 官方文档、Ant Design 最佳实践、个人/团队约定
 
 ---
 

@@ -11,7 +11,7 @@ paths:
 
 # Java 开发规范
 
-> 参考来源: Google Java Style Guide、阿里巴巴 Java 开发手册
+> 参考来源: Google Java Style Guide、阿里巴巴 Java 开发手册、个人/团队约定
 
 ---
 
@@ -44,34 +44,34 @@ mvn verify                           # 运行所有检查
 
 ## 类成员顺序
 
-```java
+```
 public class Example {
     
     // 1. 静态常量
     public static final String CONSTANT = "value";
-
+    
     // 2. 静态变量
     private static Logger logger = LoggerFactory.getLogger(Example.class);
-
+    
     // 3. 实例变量
     private Long id;
-
+    
     // 4. 构造函数
     public Example() { }
-
+    
     // 5. 静态方法
-    public static Example create() {
-        return new Example();
+    public static Example create() { 
+        return new Example(); 
     }
-
+    
     // 6. 实例方法（公共）
     public void doSomething() {
     }
-
+    
     // 7. 实例方法（私有）
     private void helperMethod() {
     }
-
+    
     // 8. getter/setter（或使用 Lombok）
 }
 ```
@@ -80,7 +80,7 @@ public class Example {
 
 ## 异常处理
 
-```java
+```
 // ✅ 好：捕获具体异常，添加上下文
 try {
     user = userRepository.findById(id);
@@ -94,35 +94,41 @@ try (InputStream is = new FileInputStream(file)) {
 }
 
 // ❌ 差：捕获过宽
-catch (Exception e) { e.printStackTrace(); }
+try {
+    doSomething();
+} catch (Exception e) {  // 太宽泛
+    e.printStackTrace(); // 不要用 printStackTrace
+}
 ```
 
 ---
 
 ## 空值处理
 
-```java
+```
 // ✅ 使用 Optional
 public Optional<User> findById(Long id) {
-    return userRepository.findById(id);
+    return getBaseService()
+            .findById(id);
 }
 
 // ✅ 参数校验
 public void updateUser(User user) {
-    Objects.requireNonNull(user, "user must not be null");
+    Validator.validateNotNull(user, "user must not be null");
+    // ...
 }
 
 // ✅ 安全的空值处理
-String name = Optional.ofNullable(user)
+String name = Opt.ofNullable(user)
     .map(User::getName)
-    .orElse("Unknown");
+    .get();
 ```
 
 ---
 
 ## 并发编程
 
-```java
+```
 // ✅ 使用 ExecutorService
 ExecutorService executor = Executors.newFixedThreadPool(10);
 Future<Result> future = executor.submit(() -> doWork());
@@ -140,7 +146,7 @@ new Thread(() -> doWork()).start();
 
 ## 测试规范 (JUnit 5)
 
-```java
+```
 class UserServiceTest {
     
     @Test
@@ -163,7 +169,7 @@ class UserServiceTest {
 
 ## Spring Boot 规范
 
-```java
+```
 // ✅ 字段注入
 @Getter
 @Service
@@ -203,14 +209,14 @@ public class UserController {
 
 ## 日志规范
 
-```java
+```
 // ✅ 参数化日志
-log.debug("Finding user by id: {}", userId);
-log.info("User {} logged in successfully", username);
-log.error("Failed to process order {}", orderId, exception);
+StaticLog.debug("Finding user by id: {}", userId);
+StaticLog.info("User {} logged in successfully", username);
+StaticLog.error("Failed to process order {}", orderId, exception);
 
 // ❌ 差：字符串拼接
-log.debug("Finding user by id: " + userId);
+StaticLog.debug("Finding user by id: " + userId);
 ```
 
 ---
@@ -220,6 +226,7 @@ log.debug("Finding user by id: " + userId);
 | 文件 | 内容 |
 |------|------|
 | `references/java-style.md` | 命名约定、异常处理、Spring Boot、测试规范 |
+| `references/dependencies.md` | 常用依赖（Hutool 等） |
 | `references/collections.md` | 不可变集合（Guava）、字符串分割 |
 | `references/concurrency.md` | 线程池配置、CompletableFuture 超时 |
 | `references/code-patterns.md` | 卫语句、枚举优化、策略工厂模式 |

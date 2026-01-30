@@ -7,7 +7,7 @@
 
 > **部署位置**: `~/.claude/rules/frontend-style.md`
 > **作用范围**: 前端/界面相关代码
-> **参考来源**: React 官方文档、Ant Design 最佳实践
+> **参考来源**: React 官方文档、Ant Design 最佳实践、个人/团队约定
 
 ---
 paths:

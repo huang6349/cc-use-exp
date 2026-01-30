@@ -8,7 +8,7 @@
 
 提前处理异常/边界情况并 return，减少嵌套层级。
 
-```java
+```
 // ❌ 嵌套过深
 public void process(User user) {
     if (user != null) {
@@ -38,7 +38,7 @@ public void process(User user) {
 
 用枚举封装 code 与 message 的映射关系。
 
-```java
+```
 // ❌ 冗长的 if/else
 public String getMessage(int code) {
     if (code == 1) return "成功";
@@ -79,7 +79,7 @@ public enum ResultCode {
 
 消除业务分支，支持扩展。
 
-```java
+```
 // 1. 定义策略接口
 public interface PayStrategy {
     
@@ -127,7 +127,7 @@ PayFactory.get("ali").pay();
 
 避免每次创建新实例。
 
-```java
+```
 // ❌ 每次创建新实例
 public void doSomething() {
     

@@ -42,7 +42,7 @@ paths: "**/*"
 ## ✅ 必须遵循
 
 ### 1. Type-First（类型先行）
-编写业务逻辑前，先定义数据结构（TS: interface/type, Java: DTO/VO）
+编写业务逻辑前，先定义数据结构（Java: DTO/BO/VO, TS: interface/type）
 
 ### 2. 复杂任务工作流
 **复杂任务**：超过 3 个步骤或涉及多个文件

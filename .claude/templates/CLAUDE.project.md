@@ -85,7 +85,7 @@
 
 **统一响应格式**：
 
-```java
+```
 // Java 示例
 public class Result<T> {
     private int code;

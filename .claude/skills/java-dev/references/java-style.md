@@ -1,20 +1,22 @@
 # Java 开发规范
 
-作者：wwj
-版本：v1.0
-日期：2025-12-17
+作者：huangyalong
+版本：v1.0.0
+日期：2026-01-30
 状态：草稿
 
 > **部署位置**: `~/.claude/rules/java-style.md`
 > **作用范围**: 所有 Java 项目
-> **参考来源**: Google Java Style Guide、阿里巴巴 Java 开发手册
+> **参考来源**: Google Java Style Guide、阿里巴巴 Java 开发手册、个人/团队约定
 
 ---
 paths:
-  - "**/*.java"
-  - "**/pom.xml"
-  - "**/build.gradle"
-  - "**/build.gradle.kts"
+
+- "**/*.java"
+- "**/pom.xml"
+- "**/build.gradle"
+- "**/build.gradle.kts"
+
 ---
 
 ## 工具链
@@ -44,10 +46,11 @@ mvn spotbugs:check                   # SpotBugs 检查
 <!-- [注释] 遵循 Java 社区通用规范 -->
 
 ### 包命名
+
 - 全部小写，用域名反转: `com.example.project`
 - 单词间不用分隔符
 
-```java
+```
 // ✅ 好
 package com.qiandao.service;
 package org.example.util;
@@ -58,11 +61,12 @@ package com.qian_dao.service;   // 不要用下划线
 ```
 
 ### 类命名
+
 - 大驼峰（PascalCase）: `UserService`、`HttpClient`
 - 类名应是名词或名词短语
 - 接口名可用形容词: `Runnable`、`Comparable`
 
-```java
+```
 // ✅ 好
 public class UserService { }
 public class HttpRequestHandler { }
@@ -74,11 +78,12 @@ public class Do_Something { }   // 不要用下划线
 ```
 
 ### 方法命名
+
 - 小驼峰（camelCase）: `getUserById`、`isValid`
 - 动词或动词短语开头
 - 布尔返回值用 `is`/`has`/`can` 前缀
 
-```java
+```
 // ✅ 好
 public User findById(Long id) { }
 public boolean isActive() { }
@@ -90,11 +95,12 @@ public boolean active() { }          // 布尔值应用 is 前缀
 ```
 
 ### 变量命名
+
 - 小驼峰: `userId`、`orderList`
 - 常量全大写下划线分隔: `MAX_RETRY_COUNT`
 - 避免单字符命名（循环变量除外）
 
-```java
+```
 // ✅ 好
 private Long userId;
 private List<Order> orderList;
@@ -107,9 +113,10 @@ public static final int maxRetry; // 常量应全大写
 ```
 
 ### 泛型类型参数
+
 - 单个大写字母: `T`（类型）、`E`（元素）、`K`（键）、`V`（值）、`N`（数字）
 
-```java
+```
 // ✅ 好
 public class Box<T> { }
 public interface Map<K, V> { }
@@ -122,46 +129,49 @@ public <E> List<E> filterList(List<E> list, Predicate<E> predicate) { }
 
 <!-- [注释] 建议顺序，可根据团队习惯调整 -->
 
-```java
+```
 public class Example {
-
+    
     // 1. 静态常量
     public static final String CONSTANT = "value";
-
+    
     // 2. 静态变量
     private static Logger logger = LoggerFactory.getLogger(Example.class);
     
     // 3. 实例变量（按访问级别：public → protected → package → private）
     private Long id;
     private String name;
-
+    
     // 4. 构造函数
     public Example() { }
     public Example(Long id) { this.id = id; }
-
+    
     // 5. 静态方法
-    public static Example create() { return new Example(); }
-
+    public static Example create() { 
+        return new Example(); 
+    }
+    
     // 6. 实例方法（公共）
     public void doSomething() {
     }
-
+    
     // 7. 实例方法（私有）
     private void helperMethod() {
     }
-
-    // 8. getter/setter
+    
+    // 8. getter/setter（放最后或使用 Lombok）
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 }
 ```
 
 ### import 规范
+
 - 不使用通配符 `import *`（IDE 自动管理除外）
 - 静态导入单独分组
 - 按字母顺序排列
 
-```java
+```
 // ✅ 好
 import java.util.ArrayList;
 import java.util.List;
@@ -173,42 +183,56 @@ import com.qiandao.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 ```
 
-### 项目结构（Maven 标准）
+### 项目结构（Maven 多模块）
 
 <!-- [注释] 遵循 Maven 约定优于配置 -->
 
 ```
-project/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/example/project/
-│   │   │       ├── configs/         # 配置类
-│   │   │       ├── domain/          # 实体类 (继承 SuperEntity)
-│   │   │       ├── enums/           # 枚举类
-│   │   │       ├── request/         # BO 和 Query 类
-│   │   │       ├── response/        # VO (部分模块特有)
-│   │   │       ├── service/         # 服务接口
-│   │   │       │   └── impl/        # 服务实现
-│   │   │       └── web/             # 控制器
-│   │   └── resources/
-│   │       └── application.yml
-│   └── test/
-│       └── java/
-└── pom.xml
+project/                                   # 父模块根目录
+├── {module}/                              # 子模块
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/
+│   │   │   │   └── com/example/project/
+│   │   │   │       ├── configs/           # 配置类
+│   │   │   │       ├── domain/            # 实体类 (继承 SuperEntity)
+│   │   │   │       ├── enums/             # 枚举类
+│   │   │   │       ├── request/           # BO 和 Query 类
+│   │   │   │       ├── response/          # VO
+│   │   │   │       ├── service/           # 服务接口
+│   │   │   │       │   └── impl/          # 服务实现
+│   │   │   │       ├── util/              # 工具类
+│   │   │   │       └── web/               # 控制器
+│   │   │   └── resources/
+│   │   │       ├── application.yml        # 公共配置
+│   │   │       ├── application-local.yml  # 本地环境
+│   │   │       ├── application-dev.yml    # 开发环境
+│   │   │       ├── application-prod.yml   # 生产环境
+│   │   │       └── application-*.yml      # 其他环境
+│   │   └── test/
+│   │       ├── java/
+│   │       └── resources/
+│   │           └── application-test.yml
+│   └── pom.xml                            # 子模块 pom.xml
+└── pom.xml                                # 父模块 pom.xml
 ```
+
+### 常用依赖
+
+> 常用依赖见 `dependencies.md`
 
 ## 异常处理
 
 <!-- [注释] 异常处理是 Java 开发的重点 -->
 
 ### 基本原则
+
 - 优先使用标准异常
 - 不要捕获 `Exception` 或 `Throwable`（除非在最顶层）
 - 不要忽略异常（空 catch 块）
 - 异常信息要有意义
 
-```java
+```
 // ✅ 好：捕获具体异常，添加上下文
 try {
     user = userRepository.findById(id);
@@ -237,15 +261,15 @@ try {
 ```
 
 ### 自定义异常
+
 - 业务异常继承 `RuntimeException`
 - 必须提供有意义的消息
 
-```java
+```
 @Getter
-@Setter
 public class BusinessException extends RuntimeException {
     
-    private Integer errorCode;
+    private final Integer errorCode;
 
     public BusinessException(Integer errorCode,
                              String message) {
@@ -260,11 +284,13 @@ public class BusinessException extends RuntimeException {
 <!-- [注释] NPE 是 Java 最常见的错误，需特别注意 -->
 
 ### 基本原则
-- 优先使用 `Optional` 表示可能为空的返回值
-- 参数校验放在方法开头
-- 使用 `Objects.requireNonNull()` 快速失败
 
-```java
+- 优先使用 `Optional` 表示可能为空的返回值
+- 优先使用 Hutool 的 `Opt` 简化空值处理
+- 参数校验放在方法开头
+- 使用 Hutool `Validator.validateXXX()` 快速失败
+
+```
 // ✅ 好：使用 Optional
 public Optional<User> findById(Long id) {
     return getBaseService()
@@ -273,15 +299,15 @@ public Optional<User> findById(Long id) {
 
 // ✅ 好：参数校验
 public void updateUser(User user) {
-    Objects.requireNonNull(user, "user must not be null");
-    Objects.requireNonNull(user.getId(), "user.id must not be null");
+    Validator.validateNotNull(user, "user must not be null");
+    Validator.validateNotNull(user.getId(), "user.id must not be null");
     // ...
 }
 
 // ✅ 好：安全的空值处理
-String name = Optional.ofNullable(user)
+String name = Opt.ofNullable(user)
     .map(User::getName)
-    .orElse("Unknown");
+    .get();
 
 // ❌ 差：返回 null 表示"没找到"
 public User findById(Long id) {
@@ -296,10 +322,11 @@ public User findById(Long id) {
 <!-- [注释] Javadoc 是 Java 文档的标准方式 -->
 
 ### Javadoc
+
 - 所有公共 API 必须有 Javadoc
 - 描述"做什么"而非"怎么做"
 
-```java
+```
 /**
  * Finds a user by their unique identifier.
  *
@@ -313,10 +340,11 @@ public Optional<User> findById(Long id) {
 ```
 
 ### 行内注释
+
 - 解释"为什么"而非"是什么"
 - 避免废话注释
 
-```java
+```
 // ✅ 好：解释原因
 // 使用同步块而非 ConcurrentHashMap，因为需要原子地检查并更新多个字段
 synchronized (lock) {
@@ -333,11 +361,12 @@ Long userId = user.getId();  // 代码已经很清楚了
 <!-- [注释] Java 并发是复杂话题，以下是基本原则 -->
 
 ### 基本原则
+
 - 优先使用高层并发工具（`ExecutorService`、`CompletableFuture`）
 - 避免直接使用 `Thread`、`wait/notify`
 - 使用线程安全的集合（`ConcurrentHashMap`、`CopyOnWriteArrayList`）
 
-```java
+```
 // ✅ 好：使用 ExecutorService
 ExecutorService executor = Executors.newFixedThreadPool(10);
 Future<Result> future = executor.submit(() -> doWork());
@@ -352,10 +381,11 @@ new Thread(() -> doWork()).start();  // 没有生命周期管理
 ```
 
 ### 线程安全
+
 - 优先使用不可变对象
 - 使用 `@ThreadSafe`、`@NotThreadSafe` 注解标记（如果项目引入了 JSR-305）
 
-```java
+```
 // ✅ 不可变对象是线程安全的
 public final class User {
     
@@ -377,10 +407,11 @@ public final class User {
 <!-- [注释] 使用 JUnit 5 + Mockito -->
 
 ### 测试方法命名
+
 - 描述测试场景和预期结果
 - 使用 `@DisplayName` 提供可读描述
 
-```java
+```
 class UserServiceTest {
 
     @Test
@@ -415,10 +446,11 @@ class UserServiceTest {
 ```
 
 ### 测试结构
+
 - 使用 Given-When-Then 或 Arrange-Act-Assert 模式
 - 每个测试只验证一个行为
 
-```java
+```
 @Test
 void createOrder_withValidData_createsAndReturnsOrder() {
     // Given (Arrange)
@@ -437,27 +469,27 @@ void createOrder_withValidData_createsAndReturnsOrder() {
 
 ## 日志规范
 
-<!-- [注释] 使用 SLF4J + Logback/Log4j2 -->
+<!-- [注释] 使用 Hutool StaticLog + Logback/Log4j2 -->
 
 ### 基本原则
-- 使用 SLF4J 作为日志门面
+
+- 使用 Hutool `StaticLog` 作为日志门面
 - 使用参数化日志，避免字符串拼接
 - 选择合适的日志级别
 
-```java
+```
 // ✅ 好：参数化日志
-private static final Logger log = LoggerFactory.getLogger(UserService.class);
-
-log.debug("Finding user by id: {}", userId);
-log.info("User {} logged in successfully", username);
-log.warn("Failed to send email to {}, will retry", email);
-log.error("Failed to process order {}", orderId, exception);
+StaticLog.debug("Finding user by id: {}", userId);
+StaticLog.info("User {} logged in successfully", username);
+StaticLog.warn("Failed to send email to {}, will retry", email);
+StaticLog.error("Failed to process order {}", orderId, exception);
 
 // ❌ 差：字符串拼接（即使不输出也会执行拼接）
-log.debug("Finding user by id: " + userId);
+StaticLog.debug("Finding user by id: " + userId);
 ```
 
 ### 日志级别
+
 - `ERROR`: 系统错误，需要立即关注
 - `WARN`: 警告，可能的问题
 - `INFO`: 重要业务事件
@@ -469,10 +501,11 @@ log.debug("Finding user by id: " + userId);
 <!-- [注释] 如果项目使用 Spring，以下是补充规范 -->
 
 ### 依赖注入
-- 优先使用字段注入，简洁直观
+
+- 优先使用字段注入，简洁直观（团队偏好）
 - 需要时使用 `@Autowired`（Spring 4.3+ 可省略）
 
-```java
+```
 // ✅ 好：字段注入
 @Getter
 @Service
@@ -492,10 +525,11 @@ public class UserService {
 ```
 
 ### REST Controller
+
 - 使用 `@RestController` 而非 `@Controller` + `@ResponseBody`
 - 路径使用小写和斜杠: `/api/user/profiles`
 
-```java
+```
 @RestController
 @RequestMapping("/api/user/profiles")
 public class UserController {
@@ -532,7 +566,7 @@ public class UserController {
 
 ### 数据库查询优化
 
-```java
+```
 // ❌ N+1 查询问题
 List<User> users = userRepository.findAll();
 for (User user : users) {
@@ -556,7 +590,7 @@ Map<Long, List<Order>> orderMap = orders.stream()
 
 ### 集合与 Stream 优化
 
-```java
+```
 // ✅ 选择合适的集合类型
 List<User> users = new ArrayList<>(expectedSize);  // 预分配容量
 Set<String> unique = new HashSet<>(expectedSize);  // O(1) 查找
@@ -587,7 +621,7 @@ int sum = Arrays.stream(numbers).sum();
 
 ### 字符串处理
 
-```java
+```
 // ❌ 差：循环拼接字符串
 String result = "";
 for (String s : strings) {

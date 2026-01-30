@@ -10,7 +10,7 @@
 
 `static final` 只保证引用不变，集合内容仍可被修改：
 
-```java
+```
 // ❌ 危险：final 无法阻止内容被修改
 private static final Map<String, String> CONFIG = new HashMap<>();
 static {
@@ -36,7 +36,7 @@ static {
 | 键值查找，顺序不重要 | `ImmutableMap` | 更通用，性能稍好 |
 | 需要键有序遍历 | `ImmutableSortedMap` | 按自然顺序或 Comparator 排列 |
 
-```java
+```
 // 无序场景：状态码映射
 private static final ImmutableMap<String, String> PERIOD_NAME_MAP = ImmutableMap.of(
     "M", "月度",
@@ -65,7 +65,7 @@ private static final ImmutableSortedMap<Integer, String> MONTH_MAP =
 
 ### ImmutableSet / ImmutableList
 
-```java
+```
 // Set：自动去重，保持插入顺序
 ImmutableSet<String> tags = ImmutableSet.of("java", "spring", "java");
 // 结果：[java, spring]
@@ -105,7 +105,7 @@ ImmutableList<Integer> codes = ImmutableList.of(
 
 ### 常见陷阱
 
-```java
+```
 String ip = "192.168.1.1";
 
 // ❌ 陷阱：. 在正则中匹配任意字符
@@ -116,7 +116,7 @@ ip.split("\\.");         // 结果：[192, 168, 1, 1]
 StringUtils.split(ip, "."); // 结果：[192, 168, 1, 1]
 ```
 
-```java
+```
 String path = "/home//user/";
 
 // String.split：保留中间空串

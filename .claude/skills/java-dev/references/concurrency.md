@@ -16,7 +16,7 @@
 
 ### 反面教材
 
-```java
+```
 // ❌ 教材1：文件打印线程池
 new ThreadPoolExecutor(
     Runtime.getRuntime().availableProcessors() * 10,  // 核心线程过多
@@ -45,7 +45,7 @@ new ThreadPoolExecutor(
 
 ### 最佳实践配置
 
-```java
+```
 private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
 // I/O 密集型任务（如文件处理）
@@ -92,7 +92,7 @@ private final ThreadPoolExecutor cpuExecutor = new ThreadPoolExecutor(
 
 ### 代码示例
 
-```java
+```
 CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
     // 模拟耗时操作
     Thread.sleep(2000);
@@ -129,7 +129,7 @@ CompletableFuture<String> graceful = future
 
 ### 批量任务超时
 
-```java
+```
 List<CompletableFuture<String>> futures = ids.stream()
     .map(id -> CompletableFuture
         .supplyAsync(() -> fetchData(id), executor)

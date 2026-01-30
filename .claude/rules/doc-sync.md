@@ -15,7 +15,7 @@ paths: "**/*"
 | 新增/修改/删除 `skills/` | README.md（技能列表） |
 | 新增/修改/删除 `rules/` | README.md（规则列表） |
 | 项目结构变更（新增/删除核心目录） | CLAUDE.md |
-| 技术栈变更（go.mod/package.json 主要依赖） | CLAUDE.md |
+| 技术栈变更（pom.xml/package.json 主要依赖） | CLAUDE.md |
 | 构建/部署变更（启动脚本、Docker 配置） | CLAUDE.md |
 
 ---
