@@ -1,4 +1,4 @@
-<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+<svg width="800" height="320" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1"/>
@@ -10,18 +10,15 @@
       .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
       sans-serif; font-size: 24px; fill: #94a3b8; text-anchor: middle; }
       .label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      font-size: 20px; font-weight: 500; text-anchor: middle; }
+      font-size: 48px; font-weight: bold; text-anchor: middle; }
     </style>
   </defs>
   <!-- Background -->
-  <rect width="800" height="400" fill="url(#bg)" rx="12"/>
-  <!-- Abstract Design Elements -->
-  <!-- Center: Claude Theme (Warm/Orange) -->
-  <circle cx="400" cy="160" r="70" fill="#334155" opacity="0.3"/>
-  <circle cx="400" cy="160" r="50" fill="#da7756"/>
-  <text x="400" y="260" class="label" fill="#da7756">Claude Code</text>
+  <rect width="800" height="320" fill="url(#bg)" rx="12"/>
+  <!-- Claude Code Label -->
+  <text x="400" y="105" class="label" fill="#da7756">Claude Code</text>
   <!-- Main Title -->
-  <text x="400" y="320" class="title">AI 编码助手配置中心</text>
+  <text x="400" y="195" class="title">AI 编码助手配置中心</text>
   <!-- Subtitle -->
-  <text x="400" y="360" class="subtitle">开箱即用的配置模板与最佳实践</text>
+  <text x="400" y="260" class="subtitle">开箱即用的配置模板与最佳实践</text>
 </svg>
