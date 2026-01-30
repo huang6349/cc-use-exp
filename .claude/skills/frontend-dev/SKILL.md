@@ -103,8 +103,10 @@ export function UserCard({ userId }: Props) {
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| 组件文件 | PascalCase.tsx | `UserCard.tsx` |
-| Hooks | useXxx.ts | `useAuth.ts` |
+| 业务组件文件 | PascalCase.js | `UserList.js` |
+| 通用组件文件 | PascalCase.tsx | `UserList.tsx` |
+| 业务 Hooks | useXxx.js | `useUserList.js` |
+| 通用 Hooks | useXxx.ts | `useUserList.ts` |
 | Store | XxxStore.ts | `UserStore.ts` |
 
 ---
@@ -151,20 +153,75 @@ if (list.length === 0) return <Empty description="暂无数据" />
 
 ---
 
-## TypeScript 规范
+## 编码语言选择
 
-```typescript
-// types/user.ts
-export interface User {
-  id: number
-  username: string
-  role: 'admin' | 'user'
+| 场景 | 语言 | 说明 |
+|------|------|------|
+| 业务页面/组件 | **JavaScript** | 快速开发，减少类型声明噪音 |
+| 通用组件/Hooks | **TypeScript** | 强类型确保复用安全 |
+| 工具函数库 | TypeScript | 类型导出便于消费方 |
+
+### JavaScript 业务代码示例
+
+```jsx
+// pages/user/UserList.js
+import { useState, useEffect } from 'react'
+import { Table, Button, message } from 'antd'
+
+export function UserList() {
+  const [loading, setLoading] = useState(false)
+  const [users, setUsers] = useState([])
+
+  const loadUsers = async () => {
+    setLoading(true)
+    try {
+      const data = await api.getUsers()
+      setUsers(data)
+    } catch (e) {
+      message.error('加载失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  return (
+    <Table
+      loading={loading}
+      dataSource={users}
+      columns={[
+        { title: '姓名', dataIndex: 'name' },
+        { title: '邮箱', dataIndex: 'email' },
+      ]}
+    />
+  )
+}
+```
+
+### TypeScript 通用组件示例
+
+```tsx
+// components/Form/BaseForm.tsx
+import { useCallback, useMemo } from 'react'
+import type { FormProps } from 'antd'
+
+interface BaseFormProps<T = Record<string, unknown>> {
+  initialValues?: T
+  onSubmit: (values: T) => Promise<void>
 }
 
-export interface ApiResponse<T = unknown> {
-  code: number
-  message: string
-  data: T
+export function BaseForm<T extends Record<string, unknown>>({
+  initialValues,
+  onSubmit,
+}: BaseFormProps<T>) {
+  const handleSubmit = useCallback(async (values: T) => {
+    await onSubmit(values)
+  }, [onSubmit])
+
+  return <Form initialValues={initialValues} onFinish={handleSubmit} />
 }
 ```
 

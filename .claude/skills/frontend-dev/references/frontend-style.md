@@ -29,7 +29,7 @@ paths:
 
 - **仅在涉及前端/界面开发时遵循**本规则
 - **默认使用框架/组件库的脚手架风格**: 不做"AI 设计稿"，不做大改主题色
-- **技术栈优先级**: React > Vue；默认使用 TypeScript
+- **技术栈优先级**: React > Vue；**业务代码默认 JavaScript**，通用组件使用 TypeScript
 
 ---
 
@@ -88,7 +88,7 @@ paths:
 
 | 层级 | 选择 |
 |------|------|
-| 框架 | React 18 + TypeScript |
+| 框架 | React 18 + JavaScript |
 | 构建 | Vite |
 | 路由 | React Router 6 |
 | 状态管理 | Zustand |
@@ -169,9 +169,10 @@ export function UserCard({ userId, title = '用户信息' }: Props) {
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
-| 组件文件 | PascalCase.tsx | `UserCard.tsx` |
-| 组件目录 | 可复用放 `components/`，页面放 `pages/` | |
-| Hooks | useXxx.ts | `useAuth.ts` |
+| 业务组件文件 | PascalCase.js | `UserList.js` |
+| 通用组件文件 | PascalCase.tsx | `UserList.tsx` |
+| 业务 Hooks | useXxx.js | `useUserList.js` |
+| 通用 Hooks | useXxx.ts | `useUserList.ts` |
 | Store | XxxStore.ts | `UserStore.ts` |
 | 类型文件 | xxx.ts 或 types/ 目录 | `user.ts` |
 
@@ -441,17 +442,83 @@ function UserList() {
 
 ---
 
-## 7. TypeScript 规范
+## 7. JavaScript 和 TypeScript 使用规范
 
-<!-- [注释] 前端也要严格使用 TypeScript -->
+<!-- [注释] 业务代码用 JavaScript，通用组件用 TypeScript -->
 
-### 7.1 基本要求
+### 7.1 语言选择原则
 
-- 默认使用 TypeScript，禁止大范围 `any`
-- 必须为 API 响应定义类型
-- 组件 Props 必须有类型定义
+| 场景 | 语言 | 说明 |
+|------|------|------|
+| 业务页面/组件 | **JavaScript** | 快速开发，减少类型声明噪音 |
+| 通用组件/Hooks | **TypeScript** | 强类型确保复用安全 |
+| 工具函数库 | TypeScript | 类型导出便于消费方 |
 
-### 7.2 类型定义位置
+### 7.2 JavaScript 业务代码示例
+
+```jsx
+// pages/user/UserList.js
+import { useState, useEffect } from 'react'
+import { Table, Button, message } from 'antd'
+
+export function UserList() {
+  const [loading, setLoading] = useState(false)
+  const [users, setUsers] = useState([])
+
+  const loadUsers = async () => {
+    setLoading(true)
+    try {
+      const data = await api.getUsers()
+      setUsers(data)
+    } catch (e) {
+      message.error('加载失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  return (
+    <Table
+      loading={loading}
+      dataSource={users}
+      columns={[
+        { title: '姓名', dataIndex: 'name' },
+        { title: '邮箱', dataIndex: 'email' },
+      ]}
+    />
+  )
+}
+```
+
+### 7.3 TypeScript 通用组件示例
+
+```tsx
+// components/Form/BaseForm.tsx
+import { useCallback } from 'react'
+import type { FormProps } from 'antd'
+
+interface BaseFormProps<T = Record<string, unknown>> {
+  initialValues?: T
+  onSubmit: (values: T) => Promise<void>
+}
+
+export function BaseForm<T extends Record<string, unknown>>({
+  initialValues,
+  onSubmit,
+}: BaseFormProps<T>) {
+  const handleSubmit = useCallback(async (values: T) => {
+    await onSubmit(values)
+  }, [onSubmit])
+
+  return <Form initialValues={initialValues} onFinish={handleSubmit} />
+}
+```
+
+### 7.4 类型定义位置
 
 ```
 src/
@@ -462,7 +529,7 @@ src/
 │   └── api.ts          # API 通用类型
 ```
 
-### 7.3 类型定义示例
+### 7.5 类型定义示例
 
 ```typescript
 // types/user.ts
