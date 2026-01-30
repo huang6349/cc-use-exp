@@ -1,5 +1,9 @@
 # http://editorconfig.org
 root = true
 
+[*.svg]
+indent_style = space
+indent_size = 2
+
 [*.md]
 ij_markdown_format_tables = false
