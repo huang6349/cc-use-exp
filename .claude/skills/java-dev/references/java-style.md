@@ -572,22 +572,46 @@ public class UserController {
 
 ```
 // ❌ N+1 查询问题
-List<User> users = userMapper.findAll();
+List<User> users = userMapper.selectAll();
 for (User user : users) {
-    List<Order> orders = orderMapper.findByUserId(user.getId());
+    QueryWrapper query = new QueryWrapper();
+    query.where(USER.ID.eq(user.getId()));
+    List<Order> orders = orderMapper.selectListByQuery(query);
 }
 
-// ✅ 使用 JOIN FETCH 或 @EntityGraph
-@Query("SELECT u FROM User u LEFT JOIN FETCH u.orders")
-List<User> findAllWithOrders();
+// ✅ 方案1：Relations 注解
+QueryWrapper query = new QueryWrapper();
+query.where(USER.ID.eq(user.getId()));
+List<User> users = userMapper.selectListWithRelationsByQuery(query);
 
-// ✅ 或使用 @EntityGraph
-@EntityGraph(attributePaths = {"orders"})
-List<User> findAll();
+// ✅ 方案2：Field Query
+QueryWrapper query = new QueryWrapper();
+query.where(USER.ID.eq(user.getId()));
+List<User> users = userMapper.selectListByQuery(query
+    , fieldQueryBuilder -> fieldQueryBuilder
+        .field(User::getOrders)
+        .queryWrapper(user -> QueryWrapper.create()
+            .select()
+            .from(ORDER)
+            .where(ORDER.ID.in(
+                select("order_id")
+                .from("user_order_mapping")
+                .where("user_id = ?", user.getId())
+            ))
+        )
+);
+
+// ✅ 方案3：Join Query
+QueryWrapper query = QueryWrapper.create()
+    .select(USER.ID, USER.NAME, ORDER.ALL_COLUMNS)
+    .from(USER)
+    .leftJoin(USER_ORDER).on(USER_ORDER.USER_ID.eq(USER.ID))
+    .leftJoin(ORDER).on(USER_ORDER.ORDER_ID.eq(ORDER.ID));
+List<UserVO> users = userMapper.selectListByQueryAs(query, UserVO.class);
 
 // ✅ 批量查询
 List<Long> userIds = users.stream().map(User::getId).toList();
-List<Order> orders = orderMapper.findByUserIdIn(userIds);
+List<Order> orders = orderMapper.selectListByIds(userIds);
 Map<Long, List<Order>> orderMap = orders.stream()
     .collect(Collectors.groupingBy(Order::getUserId));
 ```

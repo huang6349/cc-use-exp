@@ -60,3 +60,38 @@
 | `hutool-json` | JSON 解析（JSONUtil） |
 | `hutool-crypto` | 加密解密（对称/非对称加密、摘要等） |
 | `hutool-extra` | 扩展（模板引擎、邮件、Excel等） |
+
+---
+
+## MyBatis-Flex（ORM 框架）
+
+```
+<properties>
+    <mybatis-flex.version>1.11.x</mybatis-flex.version>
+</properties>
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.mybatis-flex</groupId>
+            <artifactId>mybatis-flex-dependencies</artifactId>
+            <version>${mybatis-flex.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+    <dependency>
+        <groupId>com.mybatis-flex</groupId>
+        <artifactId>mybatis-flex-spring-boot-starter</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**常用模块**：
+
+| 模块 | 用途 |
+|------|------|
+| `mybatis-flex-spring-boot-starter` | Spring Boot 集成 |
