@@ -121,7 +121,7 @@ public void updateUser(User user) {
 }
 
 // ✅ 安全的空值处理
-String name = Opt.ofNullable(user)
+val name = Opt.ofNullable(user)
     .map(User::getName)
     .get();
 ```
@@ -132,11 +132,11 @@ String name = Opt.ofNullable(user)
 
 ```
 // ✅ 使用 ExecutorService
-ExecutorService executor = Executors.newFixedThreadPool(10);
-Future<Result> future = executor.submit(() -> doWork());
+val executor = Executors.newFixedThreadPool(10);
+val future = executor.submit(() -> doWork());
 
 // ✅ 使用 CompletableFuture
-CompletableFuture<User> future = CompletableFuture
+val future = CompletableFuture
     .supplyAsync(() -> findUser(id))
     .thenApply(user -> enrichUser(user));
 
@@ -150,7 +150,7 @@ new Thread(() -> doWork()).start();
 
 ```
 class UserServiceTest {
-    
+
     @Test
     @DisplayName("根据 ID 查找用户 - 用户存在时返回用户")
     void findById_whenUserExists_returnsUser() {
@@ -158,7 +158,7 @@ class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(expected));
 
         // when
-        Optional<User> result = userService.findById(1L);
+        val result = userService.findById(1L);
 
         // then
         assertThat(result).isPresent();

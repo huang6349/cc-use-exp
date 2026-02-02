@@ -236,13 +236,13 @@ project/                                   # 父模块根目录
 ```
 // ✅ 好：捕获具体异常，添加上下文
 try {
-    user = userMapper.findById(id);
+    val user = userMapper.findById(id);
 } catch (DataAccessException e) {
     throw new ServiceException("Failed to find user: " + id, e);
 }
 
 // ✅ 好：资源自动关闭
-try (InputStream is = new FileInputStream(file)) {
+try (val is = new FileInputStream(file)) {
     // 使用资源
 }
 
@@ -306,7 +306,7 @@ public void update(User user) {
 }
 
 // ✅ 好：安全的空值处理
-String name = Opt.ofNullable(user)
+val name = Opt.ofNullable(user)
     .map(User::getName)
     .get();
 
@@ -354,7 +354,7 @@ synchronized (lock) {
 
 // ❌ 差：废话注释
 // 获取用户 ID
-Long userId = user.getId();  // 代码已经很清楚了
+val userId = user.getId();  // 代码已经很清楚了
 ```
 
 ## 并发编程
@@ -369,7 +369,7 @@ Long userId = user.getId();  // 代码已经很清楚了
 
 ```
 // ✅ 好：使用 ThreadUtil.newExecutor()
-ExecutorService executor = ThreadUtil.newExecutor(10);
+val executor = ThreadUtil.newExecutor(10);
 executor.execute(() -> doWork());
 executor.shutdown();  // 用完关闭
 
@@ -377,7 +377,7 @@ executor.shutdown();  // 用完关闭
 ThreadUtil.execute(() -> doWork());
 
 // ✅ 好：使用 CompletableFuture
-CompletableFuture<User> future = CompletableFuture
+val future = CompletableFuture
     .supplyAsync(() -> findUser(id))
     .thenApply(user -> enrichUser(user));
 
@@ -412,12 +412,12 @@ class UserServiceTest {
     @DisplayName("根据编号查找用户 - 用户存在时返回用户")
     void findById_whenUserExists_returnsUser() {
         // given
-        Long userId = 1L;
-        User expected = new User(userId, "test");
+        val userId = 1L;
+        val expected = new User(userId, "test");
         when(userMapper.findById(userId)).thenReturn(Optional.of(expected));
 
         // when
-        Optional<User> result = userService.findById(userId);
+        val result = userService.findById(userId);
 
         // then
         assertThat(result).isPresent();
@@ -431,7 +431,7 @@ class UserServiceTest {
         when(userMapper.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
-        Optional<User> result = userService.findById(999L);
+        val result = userService.findById(999L);
 
         // then
         assertThat(result).isEmpty();
@@ -448,11 +448,11 @@ class UserServiceTest {
 @Test
 void createOrder_withValidData_createsAndReturnsOrder() {
     // Given (Arrange)
-    OrderRequest request = new OrderRequest(/* ... */);
+    val request = new OrderRequest(/* ... */);
     when(productService.checkStock(anyLong())).thenReturn(true);
 
     // When (Act)
-    Order result = orderService.createOrder(request);
+    val result = orderService.createOrder(request);
 
     // Then (Assert)
     assertThat(result).isNotNull();
@@ -540,7 +540,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody CreateUserRequest request) {
-        UserDto created = userService.create(request);
+        val created = userService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }
@@ -562,22 +562,22 @@ public class UserController {
 
 ```
 // ❌ N+1 查询问题
-List<User> users = userMapper.selectAll();
-for (User user : users) {
-    QueryWrapper query = new QueryWrapper();
+val users = userMapper.selectAll();
+for (val user : users) {
+    val query = new QueryWrapper();
     query.where(USER.ID.eq(user.getId()));
-    List<Order> orders = orderMapper.selectListByQuery(query);
+    val orders = orderMapper.selectListByQuery(query);
 }
 
 // ✅ 方案1：Relations 注解
-QueryWrapper query = new QueryWrapper();
+val query = new QueryWrapper();
 query.where(USER.ID.eq(user.getId()));
-List<User> users = userMapper.selectListWithRelationsByQuery(query);
+val users = userMapper.selectListWithRelationsByQuery(query);
 
 // ✅ 方案2：Field Query
-QueryWrapper query = new QueryWrapper();
+val query = new QueryWrapper();
 query.where(USER.ID.eq(user.getId()));
-List<User> users = userMapper.selectListByQuery(query
+val users = userMapper.selectListByQuery(query
     , fieldQueryBuilder -> fieldQueryBuilder
         .field(User::getOrders)
         .queryWrapper(user -> QueryWrapper.create()
@@ -585,24 +585,24 @@ List<User> users = userMapper.selectListByQuery(query
             .from(ORDER)
             .where(ORDER.ID.in(
                 select("order_id")
-                .from("user_order_mapping")
-                .where("user_id = ?", user.getId())
+                    .from("user_order_mapping")
+                    .where("user_id = ?", user.getId())
             ))
         )
 );
 
 // ✅ 方案3：Join Query
-QueryWrapper query = QueryWrapper.create()
+val query = QueryWrapper.create()
     .select(USER.ID, USER.NAME, ORDER.ALL_COLUMNS)
     .from(USER)
     .leftJoin(USER_ORDER).on(USER_ORDER.USER_ID.eq(USER.ID))
     .leftJoin(ORDER).on(USER_ORDER.ORDER_ID.eq(ORDER.ID));
-List<UserVO> users = userMapper.selectListByQueryAs(query, UserVO.class);
+val users = userMapper.selectListByQueryAs(query, UserVO.class);
 
 // ✅ 批量查询
-List<Long> userIds = users.stream().map(User::getId).toList();
-List<Order> orders = orderMapper.selectListByIds(userIds);
-Map<Long, List<Order>> orderMap = orders.stream()
+val userIds = users.stream().map(User::getId).toList();
+val orders = orderMapper.selectListByIds(userIds);
+val orderMap = orders.stream()
     .collect(Collectors.groupingBy(Order::getUserId));
 ```
 
@@ -610,17 +610,17 @@ Map<Long, List<Order>> orderMap = orders.stream()
 
 ```
 // ✅ 选择合适的集合类型
-List<User> users = new ArrayList<>(expectedSize);  // 预分配容量
-Set<String> unique = new HashSet<>(expectedSize);  // O(1) 查找
-Map<Long, User> userMap = new HashMap<>(expectedSize);
+val users = new ArrayList<>(expectedSize);  // 预分配容量
+val unique = new HashSet<>(expectedSize);  // O(1) 查找
+val userMap = new HashMap<>(expectedSize);
 
 // ❌ 差：多次遍历
-long count = list.stream().filter(x -> x > 0).count();
-List<Integer> filtered = list.stream().filter(x -> x > 0).toList();
+val count = list.stream().filter(x -> x > 0).count();
+val filtered = list.stream().filter(x -> x > 0).toList();
 
 // ✅ 好：单次遍历收集多个结果
 record Stats(long count, List<Integer> filtered) {}
-Stats stats = list.stream()
+val stats = list.stream()
     .filter(x -> x > 0)
     .collect(Collectors.teeing(
         Collectors.counting(),
@@ -629,33 +629,35 @@ Stats stats = list.stream()
     ));
 
 // ❌ 差：频繁装箱拆箱
-List<Integer> numbers = ...;
-int sum = numbers.stream().mapToInt(Integer::intValue).sum();
+val numbers = ...;
+val sum = numbers.stream().mapToInt(Integer::intValue).sum();
 
 // ✅ 好：使用原始类型流
-int[] numbers = ...;
-int sum = Arrays.stream(numbers).sum();
+val numbers = ...;
+val sum = Arrays.stream(numbers).sum();
 ```
 
 ### 字符串处理
 
 ```
-// ❌ 差：循环拼接字符串
-String result = "";
-for (String s : strings) {
-    result += s;  // 每次创建新对象
-}
+// ✅ 好：使用 Hutool StrUtil（推荐）
+val result = StrUtil.join(",", strings);
 
 // ✅ 好：使用 StringBuilder
-StringBuilder sb = new StringBuilder(estimatedSize);
-for (String s : strings) {
+val sb = new StringBuilder(estimatedSize);
+for (val s : strings) {
     sb.append(s);
 }
-String result = sb.toString();
+val result = sb.toString();
 
 // ✅ 好：使用 String.join 或 Collectors.joining
-String result = String.join(",", strings);
-String result = strings.stream().collect(Collectors.joining(","));
+val result = String.join(",", strings);
+
+// ❌ 差：循环拼接字符串
+val result = "";
+for (val s : strings) {
+    result += s;  // 每次创建新对象
+}
 ```
 
 ### 连接池配置

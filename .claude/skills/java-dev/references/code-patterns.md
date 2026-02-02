@@ -130,20 +130,19 @@ PayFactory.get("ali").pay();
 ```
 // ❌ 每次创建新实例
 public void doSomething() {
-    
-    Random rand = new Random();  // 低效，可能非随机
-    int value = rand.nextInt();
+    val rand = new Random();  // 低效，可能非随机
+    val value = rand.nextInt();
 }
 
 // ✅ 重用实例
 private static final Random RANDOM = new SecureRandom();
 
 public void doSomething() {
-    int value = RANDOM.nextInt();
+    val value = RANDOM.nextInt();
 }
 
 // ✅ 多线程场景
-int value = ThreadLocalRandom.current().nextInt();
+val value = ThreadLocalRandom.current().nextInt();
 ```
 
 | 场景 | 推荐 |
