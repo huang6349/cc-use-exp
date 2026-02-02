@@ -235,7 +235,7 @@ project/                                   # 父模块根目录
 ```
 // ✅ 好：捕获具体异常，添加上下文
 try {
-    user = userRepository.findById(id);
+    user = userMapper.findById(id);
 } catch (DataAccessException e) {
     throw new ServiceException("Failed to find user: " + id, e);
 }
@@ -292,15 +292,15 @@ public class BusinessException extends RuntimeException {
 
 ```
 // ✅ 好：使用 Optional
-public Optional<User> findById(Long id) {
+public Optional<User> getById(Long id) {
     return getBaseService()
-            .findById(id);
+            .getById(id);
 }
 
 // ✅ 好：参数校验
-public void updateUser(User user) {
-    Validator.validateNotNull(user, "user must not be null");
-    Validator.validateNotNull(user.getId(), "user.id must not be null");
+public void update(User user) {
+    validateNotNull(user, "user must not be null");
+    validateNotNull(user.getId(), "user.id must not be null");
     // ...
 }
 
@@ -310,9 +310,9 @@ String name = Opt.ofNullable(user)
     .get();
 
 // ❌ 差：返回 null 表示"没找到"
-public User findById(Long id) {
+public User getById(Long id) {
     return getBaseService()
-            .findById(id)
+            .getById(id)
             .orElse(null);  // 调用方容易忘记判空
 }
 ```
@@ -362,14 +362,18 @@ Long userId = user.getId();  // 代码已经很清楚了
 
 ### 基本原则
 
-- 优先使用高层并发工具（`ExecutorService`、`CompletableFuture`）
+- 优先使用高层并发工具（`ThreadUtil`、`CompletableFuture`）
 - 避免直接使用 `Thread`、`wait/notify`
 - 使用线程安全的集合（`ConcurrentHashMap`、`CopyOnWriteArrayList`）
 
 ```
-// ✅ 好：使用 ExecutorService
-ExecutorService executor = Executors.newFixedThreadPool(10);
-Future<Result> future = executor.submit(() -> doWork());
+// ✅ 好：使用 ThreadUtil.newExecutor()
+ExecutorService executor = ThreadUtil.newExecutor(10);
+executor.execute(() -> doWork());
+executor.shutdown();  // 用完关闭
+
+// ✅ 好：使用 ThreadUtil.execute()（轻量任务，复用内置线程池）
+ThreadUtil.execute(() -> doWork());
 
 // ✅ 好：使用 CompletableFuture
 CompletableFuture<User> future = CompletableFuture
@@ -415,12 +419,12 @@ public final class User {
 class UserServiceTest {
 
     @Test
-    @DisplayName("根据 ID 查找用户 - 用户存在时返回用户")
+    @DisplayName("根据编号查找用户 - 用户存在时返回用户")
     void findById_whenUserExists_returnsUser() {
         // given
         Long userId = 1L;
         User expected = new User(userId, "test");
-        when(userRepository.findById(userId)).thenReturn(Optional.of(expected));
+        when(userMapper.findById(userId)).thenReturn(Optional.of(expected));
 
         // when
         Optional<User> result = userService.findById(userId);
@@ -431,10 +435,10 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("根据 ID 查找用户 - 用户不存在时返回空")
+    @DisplayName("根据编号查找用户 - 用户不存在时返回空")
     void findById_whenUserNotExists_returnsEmpty() {
         // given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userMapper.findById(anyLong())).thenReturn(Optional.empty());
 
         // when
         Optional<User> result = userService.findById(999L);
@@ -463,7 +467,7 @@ void createOrder_withValidData_createsAndReturnsOrder() {
     // Then (Assert)
     assertThat(result).isNotNull();
     assertThat(result.getStatus()).isEqualTo(OrderStatus.CREATED);
-    verify(orderRepository).save(any(Order.class));
+    verify(orderMapper).save(any(Order.class));
 }
 ```
 
@@ -568,9 +572,9 @@ public class UserController {
 
 ```
 // ❌ N+1 查询问题
-List<User> users = userRepository.findAll();
+List<User> users = userMapper.findAll();
 for (User user : users) {
-    List<Order> orders = orderRepository.findByUserId(user.getId());
+    List<Order> orders = orderMapper.findByUserId(user.getId());
 }
 
 // ✅ 使用 JOIN FETCH 或 @EntityGraph
@@ -583,7 +587,7 @@ List<User> findAll();
 
 // ✅ 批量查询
 List<Long> userIds = users.stream().map(User::getId).toList();
-List<Order> orders = orderRepository.findByUserIdIn(userIds);
+List<Order> orders = orderMapper.findByUserIdIn(userIds);
 Map<Long, List<Order>> orderMap = orders.stream()
     .collect(Collectors.groupingBy(Order::getUserId));
 ```
