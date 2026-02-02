@@ -13,6 +13,8 @@ paths:
 
 > 参考来源: Google Java Style Guide、阿里巴巴 Java 开发手册、个人/团队约定
 
+**技术栈推荐**: Java 17 + Spring Boot 2.x（兼容 Java 8+）
+
 ---
 
 ## 工具链
@@ -174,6 +176,7 @@ class UserServiceTest {
 @Getter
 @Service
 public class UserService {
+    
     @Autowired
     private UserRepository userRepository;
 
@@ -185,6 +188,7 @@ public class UserService {
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {
         return userService.findById(id)

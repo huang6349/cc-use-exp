@@ -27,6 +27,7 @@ paths:
 - 静态检查: SpotBugs、PMD、Checkstyle
 - 构建工具: Maven 或 Gradle
 - 测试: JUnit 5 + Mockito
+- Java: 17+（推荐 17 LTS，兼容 Java 8+）
 
 ```bash
 # Maven 常用命令
@@ -390,19 +391,8 @@ new Thread(() -> doWork()).start();  // 没有生命周期管理
 - 使用 `@ThreadSafe`、`@NotThreadSafe` 注解标记（如果项目引入了 JSR-305）
 
 ```
-// ✅ 不可变对象是线程安全的
-public final class User {
-    
-    private final Long id;
-    
-    private final String name;
-
-    public User(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    // 只有 getter，没有 setter
+// ✅ 不可变对象是线程安全的（Java 17 推荐使用 record）
+public record User(Long id, String name) {
 }
 ```
 
@@ -431,7 +421,7 @@ class UserServiceTest {
 
         // then
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo("test");
+        assertThat(result.get().name()).isEqualTo("test");  // record 自动生成 name()
     }
 
     @Test
