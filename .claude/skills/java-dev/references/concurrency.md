@@ -46,6 +46,17 @@ new ThreadPoolExecutor(
 ### 最佳实践配置
 
 ```
+// 使用 Hutool 提供的全局线程池（推荐）
+var ioExecutor = ThreadUtil.newExecutor(
+    Runtime.getRuntime().availableProcessors() * 2,  // 核心线程
+    Runtime.getRuntime().availableProcessors() * 4,  // 最大线程
+    10000  // 有界队列容量
+);
+```
+
+**或者自定义 ThreadPoolExecutor**：
+
+```
 private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
 // I/O 密集型任务（如文件处理）
@@ -93,27 +104,24 @@ private final ThreadPoolExecutor cpuExecutor = new ThreadPoolExecutor(
 ### 代码示例
 
 ```
-CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
-    // 模拟耗时操作
+var future = CompletableFuture.supplyAsync(() -> {
     Thread.sleep(2000);
     return "完成";
 });
 
 // 方式1：温和超时，可重试
 try {
-    String result = future.get(1, TimeUnit.SECONDS);
+    var result = future.get(1, TimeUnit.SECONDS);
 } catch (TimeoutException e) {
     // 这次超时，但 future 状态未变，可继续 get
 }
 
 // 方式2：强制超时终止
-CompletableFuture<String> strict = future
-    .orTimeout(1, TimeUnit.SECONDS);
+var strict = future.orTimeout(1, TimeUnit.SECONDS);
 // 超时后，后续所有 get 都抛 CompletionException
 
 // 方式3：优雅降级
-CompletableFuture<String> graceful = future
-    .completeOnTimeout("默认值", 1, TimeUnit.SECONDS);
+var graceful = future.completeOnTimeout("默认值", 1, TimeUnit.SECONDS);
 // 超时后返回"默认值"，原任务可能继续执行
 ```
 
@@ -130,7 +138,7 @@ CompletableFuture<String> graceful = future
 ### 批量任务超时
 
 ```
-List<CompletableFuture<String>> futures = ids.stream()
+var futures = ids.stream()
     .map(id -> CompletableFuture
         .supplyAsync(() -> fetchData(id), executor)
         .completeOnTimeout("N/A", 500, TimeUnit.MILLISECONDS))
@@ -139,8 +147,7 @@ List<CompletableFuture<String>> futures = ids.stream()
 // 等待全部完成
 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-// 收集结果
-List<String> results = futures.stream()
+var results = futures.stream()
     .map(CompletableFuture::join)
     .toList();
 ```
