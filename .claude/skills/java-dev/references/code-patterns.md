@@ -48,6 +48,8 @@ public String getMessage(int code) {
 }
 
 // ✅ 枚举封装
+@AllArgsConstructor
+@Getter
 public enum ResultCode {
     SUCCESS(1, "成功"),
     FAIL(-1, "失败"),
@@ -56,16 +58,11 @@ public enum ResultCode {
     private final int code;
     private final String message;
 
-    ResultCode(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
     public static String getMessage(int code) {
         return Arrays.stream(values())
-            .filter(e -> e.code == code)
+            .filter(e -> e.getCode() == code)
             .findFirst()
-            .map(e -> e.message)
+            .map(ResultCode::getMessage)
             .orElse("未知");
     }
 }
@@ -130,19 +127,19 @@ PayFactory.get("ali").pay();
 ```
 // ❌ 每次创建新实例
 public void doSomething() {
-    val rand = new Random();  // 低效，可能非随机
-    val value = rand.nextInt();
+    var rand = new Random();  // 低效，可能非随机
+    var value = rand.nextInt();
 }
 
 // ✅ 重用实例
 private static final Random RANDOM = new SecureRandom();
 
 public void doSomething() {
-    val value = RANDOM.nextInt();
+    var value = RANDOM.nextInt();
 }
 
 // ✅ 多线程场景
-val value = ThreadLocalRandom.current().nextInt();
+var value = ThreadLocalRandom.current().nextInt();
 ```
 
 | 场景 | 推荐 |
