@@ -2,96 +2,45 @@
 
 > 个人/团队约定的常用依赖配置
 
----
-
-## 依赖配置模板
-
-```
-<!-- BOM 统一版本管理（推荐） -->
-<properties>
-    <xxx-lib.version>1.0.0</xxx-lib.version>
-</properties>
-
-<dependencyManagement>
-    <dependencies>
-        <dependency>
-            <groupId>com.example</groupId>
-            <artifactId>xxx-bom</artifactId>
-            <version>${xxx-lib.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-    </dependencies>
-</dependencyManagement>
-
-<dependencies>
-    <dependency>
-        <groupId>com.example</groupId>
-        <artifactId>xxx-core</artifactId>  <!-- 无需指定版本 -->
-    </dependency>
-</dependencies>
-
-<!-- 单模块引入（无 BOM 情况，需指定版本） -->
-<dependency>
-    <groupId>com.example</groupId>
-    <artifactId>xxx-lib</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
----
-
-## Hutool（工具类库）
-
-```
-<dependency>
-    <groupId>cn.hutool</groupId>
-    <artifactId>hutool-all</artifactId>  <!-- 或按需引入 hutool-core、hutool-http 等 -->
-</dependency>
-```
-
-**常用模块**：
-
-| 模块 | 用途 |
-|------|------|
-| `hutool-core` | 核心工具（字符串、集合、日期、类型转换等） |
-| `hutool-http` | HTTP 客户端（HttpRequest/HttpResponse） |
-| `hutool-cron` | 定时任务（CronUtil） |
-| `hutool-json` | JSON 解析（JSONUtil） |
-| `hutool-crypto` | 加密解密（对称/非对称加密、摘要等） |
-| `hutool-extra` | 扩展（模板引擎、邮件、Excel等） |
-
----
-
-## MyBatis-Flex（ORM 框架）
+## 快速参考
 
 ```
 <properties>
+    <hutool.version>5.8.x</hutool.version>
     <mybatis-flex.version>1.11.x</mybatis-flex.version>
 </properties>
+```
 
+| 依赖 | 版本 | 引入方式 |
+|------|------|----------|
+| Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
+| MyBatis-Flex | 1.11.x | BOM + `mybatis-flex-spring-boot-starter` |
+
+---
+
+## 引入方式
+
+**BOM（推荐）** - 统一版本管理
+
+```
 <dependencyManagement>
     <dependencies>
         <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-dependencies</artifactId>
-            <version>${mybatis-flex.version}</version>
+            <groupId>com.xxx</groupId>
+            <artifactId>xxx-bom</artifactId>
+            <version>${xxx.version}</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
     </dependencies>
 </dependencyManagement>
-
-<dependencies>
-    <dependency>
-        <groupId>com.mybatis-flex</groupId>
-        <artifactId>mybatis-flex-spring-boot-starter</artifactId>
-    </dependency>
-</dependencies>
 ```
 
-**常用模块**：
+**直接引入** - 无 BOM 时需指定版本
 
-| 模块 | 用途 |
-|------|------|
-| `mybatis-flex-spring-boot-starter` | Spring Boot 集成 |
+```
+<dependency>
+    <groupId>com.xxx</groupId>
+    <artifactId>xxx-lib</artifactId>
+</dependency>
+```

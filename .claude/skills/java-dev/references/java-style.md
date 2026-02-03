@@ -86,7 +86,7 @@ public class Do_Something { }   // 不要用下划线
 
 ```
 // ✅ 好
-public User findById(Long id) { }
+public User getById(Long id) { }
 public boolean isActive() { }
 public boolean hasPermission(String role) { }
 
@@ -132,34 +132,31 @@ public <E> List<E> filterList(List<E> list, Predicate<E> predicate) { }
 
 ```
 public class Example {
-    
+
     // 1. 静态常量
     public static final String CONSTANT = "value";
-    
+
     // 2. 静态变量
     private static Logger logger = LoggerFactory.getLogger(Example.class);
-    
+
     // 3. 实例变量（按访问级别：public → protected → package → private）
     private Long id;
     private String name;
-    
+
     // 4. 构造函数
     public Example() { }
+
     public Example(Long id) { this.id = id; }
-    
+
     // 5. 静态方法
-    public static Example create() { 
-        return new Example(); 
-    }
-    
+    public static Example create() { return new Example(); }
+
     // 6. 实例方法（公共）
-    public void doSomething() {
-    }
-    
+    public void doSomething() { }
+
     // 7. 实例方法（私有）
-    private void helperMethod() {
-    }
-    
+    private void helperMethod() { }
+
     // 8. getter/setter（放最后或使用 Lombok）
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -184,7 +181,7 @@ import com.qiandao.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 ```
 
-### 项目结构（Maven 多模块）
+### 项目结构（Maven 标准）
 
 <!-- [注释] 遵循 Maven 约定优于配置 -->
 
@@ -196,9 +193,9 @@ project/                                   # 父模块根目录
 │   │   │   ├── java/
 │   │   │   │   └── com/example/project/
 │   │   │   │       ├── configs/           # 配置类
-│   │   │   │       ├── domain/            # 实体类 (继承 SuperEntity)
+│   │   │   │       ├── domain/            # 实体类
 │   │   │   │       ├── enums/             # 枚举类
-│   │   │   │       ├── request/           # BO 和 Query 类
+│   │   │   │       ├── request/           # 请求参数 (DTO、BO、Query)
 │   │   │   │       ├── response/          # VO
 │   │   │   │       ├── service/           # 服务接口
 │   │   │   │       │   └── impl/          # 服务实现
@@ -236,13 +233,13 @@ project/                                   # 父模块根目录
 ```
 // ✅ 好：捕获具体异常，添加上下文
 try {
-    val user = userMapper.findById(id);
+    var user = userService.getById(id);
 } catch (DataAccessException e) {
     throw new ServiceException("Failed to find user: " + id, e);
 }
 
 // ✅ 好：资源自动关闭
-try (val is = new FileInputStream(file)) {
+try (var is = new FileInputStream(file)) {
     // 使用资源
 }
 
@@ -267,9 +264,10 @@ try {
 - 必须提供有意义的消息
 
 ```
+// ✅ 好：使用 Lombok 简化异常类
 @Getter
 public class BusinessException extends RuntimeException {
-    
+
     private final Integer errorCode;
 
     public BusinessException(Integer errorCode,
@@ -286,29 +284,40 @@ public class BusinessException extends RuntimeException {
 
 ### 基本原则
 
-- 优先使用 `Optional` 表示可能为空的返回值
-- 优先使用 Hutool 的 `Opt` 简化空值处理
+- 推荐使用 Hutool `Opt` 表示可能为空的返回值
+- 推荐使用 Hutool `Validator` 简化校验
 - 参数校验放在方法开头
-- 使用 Hutool `Validator.validateXXX()` 快速失败
 
 ```
+// ✅ 好：推荐使用 Hutool Opt 安全的空值处理
+var name = Opt.ofNullable(user)
+    .map(User::getName)
+    .get();
+
 // ✅ 好：使用 Optional
 public Optional<User> getById(Long id) {
     return getBaseService()
             .getById(id);
 }
 
-// ✅ 好：参数校验
-public void update(User user) {
-    validateNotNull(user, "user must not be null");
-    validateNotNull(user.getId(), "user.id must not be null");
+// ✅ 好：推荐使用 Hutool Validator 参数校验
+public void create(User user) {
+    Validator.validateNotNull(user, "user must not be null");
+    Validator.validateNotNull(user.getId(), "user.id must not be null");
     // ...
 }
 
-// ✅ 好：安全的空值处理
-val name = Opt.ofNullable(user)
+// ✅ 好：参数校验
+public void update(User user) {
+    Objects.requireNonNull(user, "user must not be null");
+    Objects.requireNonNull(user.getId(), "user.id must not be null");
+    // ...
+}
+
+// ✅ 好：安全的空值处理（Java Optional）
+var name = Optional.ofNullable(user)
     .map(User::getName)
-    .get();
+    .orElse("Unknown");
 
 // ❌ 差：返回 null 表示"没找到"
 public User getById(Long id) {
@@ -335,7 +344,7 @@ public User getById(Long id) {
  * @return an Optional containing the user if found, empty otherwise
  * @throws IllegalArgumentException if id is null
  */
-public Optional<User> findById(Long id) {
+public Optional<User> getById(Long id) {
     // ...
 }
 ```
@@ -354,7 +363,7 @@ synchronized (lock) {
 
 // ❌ 差：废话注释
 // 获取用户 ID
-val userId = user.getId();  // 代码已经很清楚了
+var userId = user.getId();  // 代码已经很清楚了
 ```
 
 ## 并发编程
@@ -363,21 +372,25 @@ val userId = user.getId();  // 代码已经很清楚了
 
 ### 基本原则
 
-- 优先使用高层并发工具（`ThreadUtil`、`CompletableFuture`）
+- 推荐使用 Hutool `ThreadUtil` 简化线程操作
+- 使用高层并发工具（`ExecutorService`、`CompletableFuture`）
 - 避免直接使用 `Thread`、`wait/notify`
 - 使用线程安全的集合（`ConcurrentHashMap`、`CopyOnWriteArrayList`）
 
 ```
-// ✅ 好：使用 ThreadUtil.newExecutor()
-val executor = ThreadUtil.newExecutor(10);
-executor.execute(() -> doWork());
-executor.shutdown();  // 用完关闭
+// ✅ 好：推荐使用 Hutool ThreadUtil
+var executor = ThreadUtil.newExecutor(10);
+var future = executor.submit(() -> doWork());
 
-// ✅ 好：使用 ThreadUtil.execute()（轻量任务，复用内置线程池）
-ThreadUtil.execute(() -> doWork());
+// ✅ 好：使用 Hutool 异步执行
+ThreadUtil.execAsync(() -> doWork());
+
+// ✅ 好：使用 ExecutorService
+var executor = Executors.newFixedThreadPool(10);
+var future = executor.submit(() -> doWork());
 
 // ✅ 好：使用 CompletableFuture
-val future = CompletableFuture
+var future = CompletableFuture
     .supplyAsync(() -> findUser(id))
     .thenApply(user -> enrichUser(user));
 
@@ -392,7 +405,15 @@ new Thread(() -> doWork()).start();  // 没有生命周期管理
 
 ```
 // ✅ 不可变对象是线程安全的（Java 17 推荐使用 record）
-public record User(Long id, String name) {
+public record User(Long id, String name) { }
+
+// ❌ 差：传统 POJO 需要手动保证不可变性
+@Data
+public class User {
+
+    private final Long id;
+
+    private final String name;
 }
 ```
 
@@ -406,32 +427,34 @@ public record User(Long id, String name) {
 - 使用 `@DisplayName` 提供可读描述
 
 ```
+record User(Long id, String name) { }
+
 class UserServiceTest {
 
     @Test
     @DisplayName("根据编号查找用户 - 用户存在时返回用户")
-    void findById_whenUserExists_returnsUser() {
+    void getById_whenUserExists_returnsUser() {
         // given
-        val userId = 1L;
-        val expected = new User(userId, "test");
-        when(userMapper.findById(userId)).thenReturn(Optional.of(expected));
+        var userId = 1L;
+        var expected = new User(userId, "test");
+        when(userService.getById(userId)).thenReturn(Optional.of(expected));
 
         // when
-        val result = userService.findById(userId);
+        var result = userService.getById(userId);
 
         // then
         assertThat(result).isPresent();
-        assertThat(result.get().name()).isEqualTo("test");  // record 自动生成 name()
+        assertThat(result.get().name()).isEqualTo("test");
     }
 
     @Test
     @DisplayName("根据编号查找用户 - 用户不存在时返回空")
-    void findById_whenUserNotExists_returnsEmpty() {
+    void getById_whenUserNotExists_returnsEmpty() {
         // given
-        when(userMapper.findById(anyLong())).thenReturn(Optional.empty());
+        when(userService.getById(anyLong())).thenReturn(Optional.empty());
 
         // when
-        val result = userService.findById(999L);
+        var result = userService.getById(999L);
 
         // then
         assertThat(result).isEmpty();
@@ -448,16 +471,16 @@ class UserServiceTest {
 @Test
 void createOrder_withValidData_createsAndReturnsOrder() {
     // Given (Arrange)
-    val request = new OrderRequest(/* ... */);
+    var request = new OrderRequest(/* ... */);
     when(productService.checkStock(anyLong())).thenReturn(true);
 
     // When (Act)
-    val result = orderService.createOrder(request);
+    var result = orderService.createOrder(request);
 
     // Then (Assert)
     assertThat(result).isNotNull();
     assertThat(result.getStatus()).isEqualTo(OrderStatus.CREATED);
-    verify(orderMapper).save(any(Order.class));
+    verify(orderService).save(any(Order.class));
 }
 ```
 
@@ -467,12 +490,12 @@ void createOrder_withValidData_createsAndReturnsOrder() {
 
 ### 基本原则
 
-- 使用 Hutool `StaticLog` 作为日志门面
+- 使用 Hutool `StaticLog` 简化日志调用（底层基于 SLF4J）
 - 使用参数化日志，避免字符串拼接
 - 选择合适的日志级别
 
 ```
-// ✅ 好：参数化日志
+// ✅ 好：推荐使用 Hutool StaticLog 参数化日志
 StaticLog.debug("Finding user by id: {}", userId);
 StaticLog.info("User {} logged in successfully", username);
 StaticLog.warn("Failed to send email to {}, will retry", email);
@@ -497,7 +520,8 @@ StaticLog.debug("Finding user by id: " + userId);
 ### 依赖注入
 
 - 优先使用字段注入，简洁直观（团队偏好）
-- 需要时使用 `@Autowired`（Spring 4.3+ 可省略）
+- 需要时使用 `@Autowired`
+- 需要时使用 Lombok `@RequiredArgsConstructor` 简化
 
 ```
 // ✅ 好：字段注入
@@ -506,15 +530,17 @@ StaticLog.debug("Finding user by id: " + userId);
 public class UserService {
 
     @Autowired
-    private UserMapper userMapper;
+    private EmailService emailService;
 }
 
-// ❌ 差：构造函数注入
+// ✅ 好：构造函数注入
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserMapper userMapper;
+    private final EmailService emailService;
+
+    // 不需要 @Autowired，Spring 4.3+ 自动注入
 }
 ```
 
@@ -524,6 +550,7 @@ public class UserService {
 - 路径使用小写和斜杠: `/api/user/profiles`
 
 ```
+@Getter
 @RestController
 @RequestMapping("/api/user/profiles")
 public class UserController {
@@ -532,15 +559,16 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findById(@PathVariable Long id) {
-        return userService.findById(id)
+    public ResponseEntity<UserDto> getById(@PathVariable Long id) {
+        return getUserService()
+            .getById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody CreateUserRequest request) {
-        val created = userService.create(request);
+        var created = getUserService().create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }
@@ -561,66 +589,45 @@ public class UserController {
 ### 数据库查询优化
 
 ```
-// ❌ N+1 查询问题
-val users = userMapper.selectAll();
-for (val user : users) {
-    val query = new QueryWrapper();
+// ✅ 好：使用 JOIN FETCH 或 Relations 注解
+@Select("SELECT u FROM User u LEFT JOIN FETCH u.orders")
+List<User> getAllWithOrders();
+
+// ✅ 好：使用 Relations 注解
+var users = userService.getMapper()
+    .selectAllWithRelations();
+
+// ✅ 好：批量查询
+var userIds = users.stream()
+    .map(User::getId)
+    .toList();
+var orders = orderService.getByUserIdIn(userIds);
+var orderMap = orders.stream().collect(Collectors.groupingBy(Order::getUserId));
+
+// ❌ 差：N+1 查询问题
+var users = userService.list();
+for (var user : users) {
+    var query = new QueryWrapper();
     query.where(USER.ID.eq(user.getId()));
-    val orders = orderMapper.selectListByQuery(query);
+    var orders = orderService.list(query);
 }
-
-// ✅ 方案1：Relations 注解
-val query = new QueryWrapper();
-query.where(USER.ID.eq(user.getId()));
-val users = userMapper.selectListWithRelationsByQuery(query);
-
-// ✅ 方案2：Field Query
-val query = new QueryWrapper();
-query.where(USER.ID.eq(user.getId()));
-val users = userMapper.selectListByQuery(query
-    , fieldQueryBuilder -> fieldQueryBuilder
-        .field(User::getOrders)
-        .queryWrapper(user -> QueryWrapper.create()
-            .select()
-            .from(ORDER)
-            .where(ORDER.ID.in(
-                select("order_id")
-                    .from("user_order_mapping")
-                    .where("user_id = ?", user.getId())
-            ))
-        )
-);
-
-// ✅ 方案3：Join Query
-val query = QueryWrapper.create()
-    .select(USER.ID, USER.NAME, ORDER.ALL_COLUMNS)
-    .from(USER)
-    .leftJoin(USER_ORDER).on(USER_ORDER.USER_ID.eq(USER.ID))
-    .leftJoin(ORDER).on(USER_ORDER.ORDER_ID.eq(ORDER.ID));
-val users = userMapper.selectListByQueryAs(query, UserVO.class);
-
-// ✅ 批量查询
-val userIds = users.stream().map(User::getId).toList();
-val orders = orderMapper.selectListByIds(userIds);
-val orderMap = orders.stream()
-    .collect(Collectors.groupingBy(Order::getUserId));
 ```
 
 ### 集合与 Stream 优化
 
 ```
 // ✅ 选择合适的集合类型
-val users = new ArrayList<>(expectedSize);  // 预分配容量
-val unique = new HashSet<>(expectedSize);  // O(1) 查找
-val userMap = new HashMap<>(expectedSize);
+var users = new ArrayList<User>(expectedSize);   // 预分配容量
+var unique = new HashSet<String>(expectedSize);  // O(1) 查找
+var userMap = new HashMap<Long, User>(expectedSize);
 
 // ❌ 差：多次遍历
-val count = list.stream().filter(x -> x > 0).count();
-val filtered = list.stream().filter(x -> x > 0).toList();
+var count = list.stream().filter(x -> x > 0).count();
+var filtered = list.stream().filter(x -> x > 0).toList();
 
 // ✅ 好：单次遍历收集多个结果
 record Stats(long count, List<Integer> filtered) {}
-val stats = list.stream()
+var stats = list.stream()
     .filter(x -> x > 0)
     .collect(Collectors.teeing(
         Collectors.counting(),
@@ -629,33 +636,36 @@ val stats = list.stream()
     ));
 
 // ❌ 差：频繁装箱拆箱
-val numbers = ...;
-val sum = numbers.stream().mapToInt(Integer::intValue).sum();
+var numbers = ...;
+var sum = numbers.stream()
+        .mapToInt(Integer::intValue)
+        .sum();
 
 // ✅ 好：使用原始类型流
-val numbers = ...;
-val sum = Arrays.stream(numbers).sum();
+var numbers = ...;
+var sum = Arrays.stream(numbers).sum();
 ```
 
 ### 字符串处理
 
 ```
-// ✅ 好：使用 Hutool StrUtil（推荐）
-val result = StrUtil.join(",", strings);
+// ✅ 好：使用 推荐 Hutool StrUtil
+var result = StrUtil.join(",", strings);
 
 // ✅ 好：使用 StringBuilder
-val sb = new StringBuilder(estimatedSize);
-for (val s : strings) {
+var sb = new StringBuilder(estimatedSize);
+for (var s : strings) {
     sb.append(s);
 }
-val result = sb.toString();
+var result = sb.toString();
 
 // ✅ 好：使用 String.join 或 Collectors.joining
-val result = String.join(",", strings);
+var result = String.join(",", strings);
+var result = strings.stream().collect(Collectors.joining(","));
 
 // ❌ 差：循环拼接字符串
-val result = "";
-for (val s : strings) {
+var result = "";
+for (var s : strings) {
     result += s;  // 每次创建新对象
 }
 ```
@@ -676,7 +686,7 @@ spring.datasource:
 ### 避免常见陷阱
 
 | 陷阱 | 解决方案 |
-|------|---------|
+|------|----------|
 | N+1 查询 | 使用 JOIN FETCH 或批量查询 |
 | 循环中拼接字符串 | 使用 `StringBuilder` |
 | 频繁装箱拆箱 | 使用原始类型或原始类型流 |
