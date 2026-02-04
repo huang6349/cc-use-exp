@@ -47,10 +47,10 @@ new ThreadPoolExecutor(
 
 ```
 // 使用 Hutool 提供的全局线程池（推荐）
-var ioExecutor = ThreadUtil.newExecutor(
-    Runtime.getRuntime().availableProcessors() * 2,  // 核心线程
-    Runtime.getRuntime().availableProcessors() * 4,  // 最大线程
-    10000  // 有界队列容量
+private final ThreadPoolExecutor ioExecutor = ThreadUtil.newExecutor(
+    CPU_COUNT * 2,                             // 核心线程
+    CPU_COUNT * 4,                             // 最大线程（有界！）
+    10000                                      // 有界队列
 );
 ```
 
@@ -61,12 +61,12 @@ private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
 // I/O 密集型任务（如文件处理）
 private final ThreadPoolExecutor ioExecutor = new ThreadPoolExecutor(
-    CPU_COUNT * 2,      // 核心线程
-    CPU_COUNT * 4,      // 最大线程（有界！）
+    CPU_COUNT * 2,                             // 核心线程
+    CPU_COUNT * 4,                             // 最大线程（有界！）
     60L, TimeUnit.SECONDS,
-    new LinkedBlockingQueue<>(10000),  // 有界队列
+    new LinkedBlockingQueue<>(10000),          // 有界队列
     new NamedThreadFactory("io-task"),
-    new ThreadPoolExecutor.AbortPolicy()  // 明确拒绝
+    new ThreadPoolExecutor.AbortPolicy()       // 明确拒绝
 );
 
 // CPU 密集型任务（如计算）
@@ -104,24 +104,25 @@ private final ThreadPoolExecutor cpuExecutor = new ThreadPoolExecutor(
 ### 代码示例
 
 ```
-var future = CompletableFuture.supplyAsync(() -> {
+CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+    // 模拟耗时操作
     Thread.sleep(2000);
     return "完成";
 });
 
 // 方式1：温和超时，可重试
 try {
-    var result = future.get(1, TimeUnit.SECONDS);
+    String result = future.get(1, TimeUnit.SECONDS);
 } catch (TimeoutException e) {
     // 这次超时，但 future 状态未变，可继续 get
 }
 
 // 方式2：强制超时终止
-var strict = future.orTimeout(1, TimeUnit.SECONDS);
+CompletableFuture<String> strict = future.orTimeout(1, TimeUnit.SECONDS);
 // 超时后，后续所有 get 都抛 CompletionException
 
 // 方式3：优雅降级
-var graceful = future.completeOnTimeout("默认值", 1, TimeUnit.SECONDS);
+CompletableFuture<String> graceful = future.completeOnTimeout("默认值", 1, TimeUnit.SECONDS);
 // 超时后返回"默认值"，原任务可能继续执行
 ```
 
@@ -138,7 +139,7 @@ var graceful = future.completeOnTimeout("默认值", 1, TimeUnit.SECONDS);
 ### 批量任务超时
 
 ```
-var futures = ids.stream()
+List<CompletableFuture<String>> futures = ids.stream()
     .map(id -> CompletableFuture
         .supplyAsync(() -> fetchData(id), executor)
         .completeOnTimeout("N/A", 500, TimeUnit.MILLISECONDS))
@@ -147,7 +148,8 @@ var futures = ids.stream()
 // 等待全部完成
 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
-var results = futures.stream()
+// 收集结果
+List<String> results = futures.stream()
     .map(CompletableFuture::join)
     .toList();
 ```

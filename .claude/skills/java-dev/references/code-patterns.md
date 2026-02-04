@@ -79,7 +79,6 @@ public enum ResultCode {
 ```
 // 1. 定义策略接口
 public interface PayStrategy {
-    
     void pay();
 }
 
@@ -127,19 +126,19 @@ PayFactory.get("ali").pay();
 ```
 // ❌ 每次创建新实例
 public void doSomething() {
-    var rand = new Random();  // 低效，可能非随机
-    var value = rand.nextInt();
+    Random rand = new Random();  // 低效，可能非随机
+    int value = rand.nextInt();
 }
 
 // ✅ 重用实例
 private static final Random RANDOM = new SecureRandom();
 
 public void doSomething() {
-    var value = RANDOM.nextInt();
+    int value = RANDOM.nextInt();
 }
 
 // ✅ 多线程场景
-var value = ThreadLocalRandom.current().nextInt();
+int value = ThreadLocalRandom.current().nextInt();
 ```
 
 | 场景 | 推荐 |
