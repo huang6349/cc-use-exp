@@ -51,7 +51,7 @@ mvn spotbugs:check                   # SpotBugs 检查
 - 全部小写，用域名反转: `com.example.project`
 - 单词间不用分隔符
 
-```
+```java
 // ✅ 好
 package com.qiandao.service;
 package org.example.util;
@@ -67,7 +67,7 @@ package com.qian_dao.service;   // 不要用下划线
 - 类名应是名词或名词短语
 - 接口名可用形容词: `Runnable`、`Comparable`
 
-```
+```java
 // ✅ 好
 public class UserService { }
 public class HttpRequestHandler { }
@@ -84,7 +84,7 @@ public class Do_Something { }   // 不要用下划线
 - 动词或动词短语开头
 - 布尔返回值用 `is`/`has`/`can` 前缀
 
-```
+```java
 // ✅ 好
 public User getById(Long id) { }
 public boolean isActive() { }
@@ -101,7 +101,7 @@ public boolean active() { }          // 布尔值应用 is 前缀
 - 常量全大写下划线分隔: `MAX_RETRY_COUNT`
 - 避免单字符命名（循环变量除外）
 
-```
+```java
 // ✅ 好
 private Long userId;
 private List<Order> orderList;
@@ -117,7 +117,7 @@ public static final int maxRetry; // 常量应全大写
 
 - 单个大写字母: `T`（类型）、`E`（元素）、`K`（键）、`V`（值）、`N`（数字）
 
-```
+```java
 // ✅ 好
 public class Box<T> { }
 public interface Map<K, V> { }
@@ -130,7 +130,7 @@ public <E> List<E> filterList(List<E> list, Predicate<E> predicate) { }
 
 <!-- [注释] 建议顺序，可根据团队习惯调整 -->
 
-```
+```java
 public class Example {
 
     // 1. 静态常量
@@ -169,7 +169,7 @@ public class Example {
 - 静态导入单独分组
 - 按字母顺序排列
 
-```
+```java
 // ✅ 好
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +230,7 @@ project/                                   # 父模块根目录
 - 不要忽略异常（空 catch 块）
 - 异常信息要有意义
 
-```
+```java
 // ✅ 好：捕获具体异常，添加上下文
 try {
     var user = userService.getById(id);
@@ -263,7 +263,7 @@ try {
 - 业务异常继承 `RuntimeException`
 - 必须提供有意义的消息
 
-```
+```java
 // ✅ 好：使用 Lombok 简化异常类
 @Getter
 public class BusinessException extends RuntimeException {
@@ -288,7 +288,7 @@ public class BusinessException extends RuntimeException {
 - 推荐使用 Hutool `Validator` 简化校验
 - 参数校验放在方法开头
 
-```
+```java
 // ✅ 好：推荐使用 Hutool Opt 安全的空值处理
 var name = Opt.ofNullable(user)
     .map(User::getName)
@@ -336,7 +336,7 @@ public User getById(Long id) {
 - 所有公共 API 必须有 Javadoc
 - 描述"做什么"而非"怎么做"
 
-```
+```java
 /**
  * Finds a user by their unique identifier.
  *
@@ -354,7 +354,7 @@ public Optional<User> getById(Long id) {
 - 解释"为什么"而非"是什么"
 - 避免废话注释
 
-```
+```java
 // ✅ 好：解释原因
 // 使用同步块而非 ConcurrentHashMap，因为需要原子地检查并更新多个字段
 synchronized (lock) {
@@ -377,7 +377,7 @@ var userId = user.getId();  // 代码已经很清楚了
 - 避免直接使用 `Thread`、`wait/notify`
 - 使用线程安全的集合（`ConcurrentHashMap`、`CopyOnWriteArrayList`）
 
-```
+```java
 // ✅ 好：推荐使用 Hutool ThreadUtil
 var executor = ThreadUtil.newExecutor(10);
 var future = executor.submit(() -> doWork());
@@ -403,7 +403,7 @@ new Thread(() -> doWork()).start();  // 没有生命周期管理
 - 优先使用不可变对象
 - 使用 `@ThreadSafe`、`@NotThreadSafe` 注解标记（如果项目引入了 JSR-305）
 
-```
+```java
 // ✅ 不可变对象是线程安全的（Java 17 推荐使用 record）
 public record User(Long id, String name) { }
 
@@ -426,7 +426,7 @@ public class User {
 - 描述测试场景和预期结果
 - 使用 `@DisplayName` 提供可读描述
 
-```
+```java
 record User(Long id, String name) { }
 
 class UserServiceTest {
@@ -467,7 +467,7 @@ class UserServiceTest {
 - 使用 Given-When-Then 或 Arrange-Act-Assert 模式
 - 每个测试只验证一个行为
 
-```
+```java
 @Test
 void createOrder_withValidData_createsAndReturnsOrder() {
     // Given (Arrange)
@@ -494,7 +494,7 @@ void createOrder_withValidData_createsAndReturnsOrder() {
 - 使用参数化日志，避免字符串拼接
 - 选择合适的日志级别
 
-```
+```java
 // ✅ 好：推荐使用 Hutool StaticLog 参数化日志
 StaticLog.debug("Finding user by id: {}", userId);
 StaticLog.info("User {} logged in successfully", username);
@@ -523,7 +523,7 @@ StaticLog.debug("Finding user by id: " + userId);
 - 需要时使用 `@Autowired`
 - 需要时使用 Lombok `@RequiredArgsConstructor` 简化
 
-```
+```java
 // ✅ 好：字段注入
 @Getter
 @Service
@@ -549,7 +549,7 @@ public class UserService {
 - 使用 `@RestController` 而非 `@Controller` + `@ResponseBody`
 - 路径使用小写和斜杠: `/api/user/profiles`
 
-```
+```java
 @Getter
 @RestController
 @RequestMapping("/api/user/profiles")
@@ -588,7 +588,7 @@ public class UserController {
 
 ### 数据库查询优化
 
-```
+```java
 // ✅ 好：使用 JOIN FETCH 或 Relations 注解
 @Select("SELECT u FROM User u LEFT JOIN FETCH u.orders")
 List<User> getAllWithOrders();
@@ -615,7 +615,7 @@ for (var user : users) {
 
 ### 集合与 Stream 优化
 
-```
+```java
 // ✅ 选择合适的集合类型
 var users = new ArrayList<User>(expectedSize);   // 预分配容量
 var unique = new HashSet<String>(expectedSize);  // O(1) 查找
@@ -648,7 +648,7 @@ var sum = Arrays.stream(numbers).sum();
 
 ### 字符串处理
 
-```
+```java
 // ✅ 好：使用 推荐 Hutool StrUtil
 var result = StrUtil.join(",", strings);
 
