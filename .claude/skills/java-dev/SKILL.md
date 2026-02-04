@@ -92,11 +92,7 @@ try (InputStream is = new FileInputStream(file)) {
 }
 
 // ❌ 差：捕获过宽
-try {
-    doSomething();
-} catch (Exception e) {  // 太宽泛
-    e.printStackTrace(); // 不要用 printStackTrace
-}
+catch (Exception e) { e.printStackTrace(); }
 ```
 
 ---
@@ -113,8 +109,6 @@ public Optional<User> getById(Long id) {
 // ✅ 好：推荐使用 Hutool Validator 参数校验
 public void update(User user) {
     Validator.validateNotNull(user, "user must not be null");
-    Validator.validateNotNull(user.getId(), "user.id must not be null");
-    // ...
 }
 
 // ✅ 好：推荐使用 Hutool Opt 安全的空值处理
@@ -131,9 +125,6 @@ String name = Opt.ofNullable(user)
 // ✅ 好：推荐使用 Hutool ThreadUtil
 ExecutorService executor = ThreadUtil.newExecutor(10);
 Future<Result> future = executor.submit(() -> doWork());
-
-// ✅ 好：使用 Hutool 异步执行
-ThreadUtil.execAsync(() -> doWork());
 
 // ✅ 好：使用 CompletableFuture
 CompletableFuture<User> future = CompletableFuture
@@ -157,12 +148,10 @@ class UserServiceTest {
     @DisplayName("根据编号查找用户 - 用户存在时返回用户")
     void getById_whenUserExists_returnsUser() {
         // given
-        Long userId = 1L;
-        User expected = new User(userId, "test");
-        when(userService.getById(userId)).thenReturn(Optional.of(expected));
+        when(userService.getById(1L)).thenReturn(Optional.of(expected));
 
         // when
-        Optional<User> result = userService.getById(userId);
+        Optional<User> result = userService.getById(1L);
 
         // then
         assertThat(result).isPresent();
