@@ -224,12 +224,12 @@ rm -rf $dir/*
 
 在 Markdown 文档中编写 bash 命令时，同样遵循以上规范：
 
-````markdown
+````
 ## 安装配置
 
 创建配置文件：
 
-```
+```bash
 sudo tee /etc/myapp/config.yml > /dev/null << 'EOF'
 server:
   port: 8080
