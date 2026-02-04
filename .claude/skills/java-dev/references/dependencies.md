@@ -6,15 +6,15 @@
 
 ```
 <properties>
-    <hutool.version>5.8.x</hutool.version>
     <mybatis-flex.version>1.11.x</mybatis-flex.version>
+    <hutool.version>5.8.x</hutool.version>
 </properties>
 ```
 
 | 依赖 | 版本 | 引入方式 |
 |------|------|----------|
-| Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
 | MyBatis-Flex | 1.11.x | BOM + `mybatis-flex-spring-boot-starter` |
+| Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
 
 ---
 
