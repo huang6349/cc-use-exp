@@ -39,8 +39,4 @@ curl -X POST https://api.example.com
 
 ---
 
-## 规则溯源
-
-```
-> 📋 本回复遵循：`bash-style.md` - [章节]
-```
+> 📋 本回复遵循：`bash-style.md`

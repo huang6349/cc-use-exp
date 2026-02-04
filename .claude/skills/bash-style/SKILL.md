@@ -19,6 +19,7 @@ description: 当用户操作 .sh、Dockerfile、Makefile、.yml、.yaml 文件�
 - ✅ 注释应独占一行，放在代码上方
 
 **适用范围**：
+
 - Shell 脚本文件（.sh）
 - Markdown 文档中的 bash 代码块
 - Dockerfile、Makefile 中的 shell 命令
@@ -41,6 +42,7 @@ cp -r src/ dist/
 ```
 
 **原因**：
+
 - 复制粘贴时容易带上注释导致命令出错
 - 长命令 + 注释 = 超长行，可读性差
 - Heredoc 块内 `#` 不是注释而是内容
@@ -243,3 +245,7 @@ EOF
 - [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html)
 - [Bash Pitfalls](https://mywiki.wooledge.org/BashPitfalls)
 - [ShellCheck](https://www.shellcheck.net/)
+
+---
+
+> 📋 本回复遵循：`bash-style`

@@ -65,6 +65,7 @@ description: 当用户执行系统级命令（sysctl、iptables、systemctl、Do
 ### 不扩散问题
 
 如果 A 配置导致问题：
+
 - ✅ 先彻底恢复 A
 - ❌ 不要去改 B、C、D
 
@@ -96,6 +97,7 @@ description: 当用户执行系统级命令（sysctl、iptables、systemctl、Do
 ### Docker 相关
 
 修改以下配置后，必须提示重启 Docker：
+
 - 内核网络参数（sysctl）
 - iptables / firewalld 规则
 - Docker daemon 配置
@@ -103,6 +105,7 @@ description: 当用户执行系统级命令（sysctl、iptables、systemctl、Do
 ### 数据库操作
 
 执行以下操作前必须提示备份：
+
 - 表结构修改（ALTER TABLE）
 - 批量数据更新（UPDATE/DELETE 无 WHERE 或影响大量数据）
 - 数据库迁移
@@ -128,3 +131,7 @@ description: 当用户执行系统级命令（sysctl、iptables、systemctl、Do
 | **高** | 可能导致服务中断、数据丢失 | 内核参数、防火墙、数据库DDL |
 | **中** | 可能影响部分功能 | 应用配置、环境变量 |
 | **低** | 影响范围小，易回滚 | 日志级别、非核心配置 |
+
+---
+
+> 📋 本回复遵循：`ops-safety`

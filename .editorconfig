@@ -6,4 +6,4 @@ indent_style = space
 indent_size = 2
 
 [*.md]
-ij_formatter_enabled = false
+ij_markdown_format_tables = false
