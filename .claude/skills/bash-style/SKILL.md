@@ -5,8 +5,9 @@ description: 当用户操作 .sh、Dockerfile、Makefile、.yml、.yaml 文件�
 
 # Bash 编写规范
 
-版本：v1.0
-更新：2026-01
+作者：huangyalong
+版本：v1.0.0
+日期：2026-02-04
 
 ---
 
@@ -22,7 +23,7 @@ description: 当用户操作 .sh、Dockerfile、Makefile、.yml、.yaml 文件�
 - Markdown 文档中的 bash 代码块
 - Dockerfile、Makefile 中的 shell 命令
 
-```bash
+```
 # ❌ 错误：行尾注释
 curl -X POST https://api.example.com/data # 发送请求
 docker run -d nginx # 启动容器
@@ -50,7 +51,7 @@ cp -r src/ dist/
 
 ### 推荐方式：tee 命令
 
-```bash
+```
 # ✅ 推荐：简洁、无嵌套引号
 sudo tee /etc/fail2ban/jail.d/docker-nginx.local > /dev/null << 'EOF'
 [docker-nginx]
@@ -63,7 +64,7 @@ EOF
 
 ### 追加内容
 
-```bash
+```
 # ✅ 追加到文件
 sudo tee -a /etc/hosts > /dev/null << 'EOF'
 192.168.1.100 myserver
@@ -75,7 +76,7 @@ echo '192.168.1.100 myserver' | sudo tee -a /etc/hosts
 
 ### 避免的写法
 
-```bash
+```
 # ❌ 避免：嵌套引号复杂，易出错
 sudo bash -c 'cat > /etc/xxx << EOF
 content
@@ -99,7 +100,7 @@ sudo sh -c "echo 'line1\nline2' > /etc/xxx"
 
 ### 禁止变量展开（推荐默认）
 
-```bash
+```
 # ✅ 'EOF' 带引号：内容原样输出，不解析变量
 sudo tee /etc/xxx > /dev/null << 'EOF'
 $HOME 不会被展开
@@ -109,7 +110,7 @@ EOF
 
 ### 需要变量展开
 
-```bash
+```
 # EOF 不带引号：变量会被展开
 sudo tee /etc/xxx > /dev/null << EOF
 当前用户: $USER
@@ -131,7 +132,7 @@ EOF
 
 ### 需要 root 权限
 
-```bash
+```
 # ✅ 正确：tee 配合 sudo
 echo 'content' | sudo tee /etc/xxx
 
@@ -141,7 +142,7 @@ sudo echo 'content' > /etc/xxx
 
 ### 路径带空格
 
-```bash
+```
 # ✅ 正确：双引号包裹路径
 sudo tee "/etc/my config/file.conf" > /dev/null << 'EOF'
 content
@@ -154,7 +155,7 @@ EOF
 
 ### 文件头
 
-```bash
+```
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -171,7 +172,7 @@ set -euo pipefail
 
 ### 变量使用
 
-```bash
+```
 # ✅ 推荐：使用 ${} 包裹
 echo "Hello, ${name}"
 
@@ -188,7 +189,7 @@ echo "Hello, $name_suffix"
 
 ### 检查命令是否存在
 
-```bash
+```
 if ! command -v docker &> /dev/null; then
     echo "docker 未安装"
     exit 1
@@ -197,7 +198,7 @@ fi
 
 ### 检查文件/目录
 
-```bash
+```
 # 文件存在
 [[ -f /path/to/file ]] && echo "文件存在"
 
@@ -207,7 +208,7 @@ fi
 
 ### 安全删除
 
-```bash
+```
 # ✅ 使用变量时防止误删
 rm -rf "${dir:?}"/*
 
@@ -226,7 +227,7 @@ rm -rf $dir/*
 
 创建配置文件：
 
-```bash
+```
 sudo tee /etc/myapp/config.yml > /dev/null << 'EOF'
 server:
   port: 8080
