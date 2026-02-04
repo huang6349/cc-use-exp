@@ -19,7 +19,7 @@ paths:
 
 ## 工具链
 
-```bash
+```
 # Maven
 mvn clean compile                    # 编译
 mvn test                             # 运行测试
