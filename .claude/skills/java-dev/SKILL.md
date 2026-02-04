@@ -1,7 +1,7 @@
 ---
 name: java-dev
 description: Java 开发规范，包含命名约定、异常处理、Spring Boot 最佳实践等
-version: v3.0
+version: v1.0.0
 paths:
   - "**/*.java"
   - "**/pom.xml"
@@ -48,32 +48,28 @@ mvn verify                           # 运行所有检查
 
 ```
 public class Example {
-    
+
     // 1. 静态常量
     public static final String CONSTANT = "value";
-    
+
     // 2. 静态变量
     private static Logger logger = LoggerFactory.getLogger(Example.class);
-    
+
     // 3. 实例变量
     private Long id;
-    
+
     // 4. 构造函数
     public Example() { }
-    
+
     // 5. 静态方法
-    public static Example create() { 
-        return new Example(); 
-    }
-    
+    public static Example create() { return new Example(); }
+
     // 6. 实例方法（公共）
-    public void doSomething() {
-    }
-    
+    public void doSomething() { }
+
     // 7. 实例方法（私有）
-    private void helperMethod() {
-    }
-    
+    private void helperMethod() { }
+
     // 8. getter/setter（或使用 Lombok）
 }
 ```
@@ -108,22 +104,23 @@ try {
 ## 空值处理
 
 ```
-// ✅ 使用 Optional
-public Optional<User> findById(Long id) {
+// ✅ 好：使用 Optional
+public Optional<User> getById(Long id) {
     return getBaseService()
-            .findById(id);
+        .getById(id);
 }
 
-// ✅ 参数校验
-public void updateUser(User user) {
+// ✅ 好：推荐使用 Hutool Validator 参数校验
+public void update(User user) {
     Validator.validateNotNull(user, "user must not be null");
+    Validator.validateNotNull(user.getId(), "user.id must not be null");
     // ...
 }
 
-// ✅ 安全的空值处理
-val name = Opt.ofNullable(user)
+// ✅ 好：推荐使用 Hutool Opt 安全的空值处理
+String name = Opt.ofNullable(user)
     .map(User::getName)
-    .get();
+    .orElse("Unknown");
 ```
 
 ---
@@ -131,12 +128,15 @@ val name = Opt.ofNullable(user)
 ## 并发编程
 
 ```
-// ✅ 使用 ExecutorService
-val executor = Executors.newFixedThreadPool(10);
-val future = executor.submit(() -> doWork());
+// ✅ 好：推荐使用 Hutool ThreadUtil
+ExecutorService executor = ThreadUtil.newExecutor(10);
+Future<Result> future = executor.submit(() -> doWork());
 
-// ✅ 使用 CompletableFuture
-val future = CompletableFuture
+// ✅ 好：使用 Hutool 异步执行
+ThreadUtil.execAsync(() -> doWork());
+
+// ✅ 好：使用 CompletableFuture
+CompletableFuture<User> future = CompletableFuture
     .supplyAsync(() -> findUser(id))
     .thenApply(user -> enrichUser(user));
 
@@ -149,20 +149,24 @@ new Thread(() -> doWork()).start();
 ## 测试规范 (JUnit 5)
 
 ```
+record User(Long id, String name) { }
+
 class UserServiceTest {
 
     @Test
-    @DisplayName("根据 ID 查找用户 - 用户存在时返回用户")
-    void findById_whenUserExists_returnsUser() {
+    @DisplayName("根据编号查找用户 - 用户存在时返回用户")
+    void getById_whenUserExists_returnsUser() {
         // given
-        when(userRepository.findById(1L)).thenReturn(Optional.of(expected));
+        Long userId = 1L;
+        User expected = new User(userId, "test");
+        when(userService.getById(userId)).thenReturn(Optional.of(expected));
 
         // when
-        val result = userService.findById(1L);
+        Optional<User> result = userService.getById(userId);
 
         // then
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo("test");
+        assertThat(result.get().name()).isEqualTo("test");
     }
 }
 ```
@@ -172,26 +176,28 @@ class UserServiceTest {
 ## Spring Boot 规范
 
 ```
-// ✅ 字段注入
+// ✅ 好：字段注入
 @Getter
 @Service
 public class UserService {
-    
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private EmailService emailService;
 }
 
 // ✅ REST Controller
+@Getter
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    
+
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> findById(@PathVariable Long id) {
-        return userService.findById(id)
+    public ResponseEntity<UserDTO> getById(@PathVariable Long id) {
+        return getUserService()
+            .getById(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -214,7 +220,7 @@ public class UserController {
 ## 日志规范
 
 ```
-// ✅ 参数化日志
+// ✅ 好：推荐使用 Hutool StaticLog 参数化日志
 StaticLog.debug("Finding user by id: {}", userId);
 StaticLog.info("User {} logged in successfully", username);
 StaticLog.error("Failed to process order {}", orderId, exception);
