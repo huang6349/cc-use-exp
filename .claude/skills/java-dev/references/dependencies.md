@@ -8,6 +8,7 @@
 <properties>
     <mybatis-flex.version>1.11.x</mybatis-flex.version>
     <hutool.version>5.8.x</hutool.version>
+    <guava.version>32.1.x-jre</guava.version>
 </properties>
 ```
 
@@ -15,6 +16,7 @@
 |------|------|----------|
 | MyBatis-Flex | 1.11.x | BOM + `mybatis-flex-spring-boot-starter` |
 | Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
+| Guava | 32.1.2-jre | `guava` 或按需模块 |
 
 ---
 

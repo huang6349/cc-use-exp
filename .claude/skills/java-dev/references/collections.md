@@ -1,10 +1,10 @@
 # 集合与字符串处理
 
-> Java 8 环境下的集合和字符串最佳实践
+> 集合和字符串最佳实践
 
 ---
 
-## 不可变集合（Guava）
+## 不可变集合
 
 ### 为什么需要不可变集合？
 
@@ -21,13 +21,7 @@ static {
 
 ### Guava 依赖
 
-```xml
-<dependency>
-    <groupId>com.google.guava</groupId>
-    <artifactId>guava</artifactId>
-    <version>32.1.2-jre</version>
-</dependency>
-```
+> Guava 依赖见 `dependencies.md`
 
 ### ImmutableMap vs ImmutableSortedMap
 
@@ -93,10 +87,10 @@ ImmutableList<Integer> codes = ImmutableList.of(
 
 ## 字符串分割
 
-### StringUtils.split vs String.split
+### Hutool StrUtil.split vs String.split
 
-| 特性 | `StringUtils.split(str, sep)` | `String.split(regex)` |
-|------|------------------------------|----------------------|
+| 特性 | `StrUtil.split(str, sep)` | `String.split(regex)` |
+|------|--------------------------|----------------------|
 | 分隔符类型 | 普通字符串 | 正则表达式 |
 | null 处理 | ✅ 返回 null | ❌ 抛 NPE |
 | 连续分隔符 | 合并为一个 | 产生空串 |
@@ -109,22 +103,22 @@ ImmutableList<Integer> codes = ImmutableList.of(
 String ip = "192.168.1.1";
 
 // ❌ 陷阱：. 在正则中匹配任意字符
-ip.split(".");           // 结果：[] 空数组！
+ip.split(".");             // 结果：[] 空数组！
 
-// ✅ 正确：转义或用 StringUtils
-ip.split("\\.");         // 结果：[192, 168, 1, 1]
-StringUtils.split(ip, "."); // 结果：[192, 168, 1, 1]
+// ✅ 正确：转义或用 StrUtil
+ip.split("\\.");           // 结果：[192, 168, 1, 1]
+StrUtil.split(ip, ".");    // 结果：[192, 168, 1, 1]
 ```
 
 ```
 String path = "/home//user/";
 
 // String.split：保留中间空串
-path.split("/");         // ["", "home", "", "user"]
-path.split("/", -1);     // ["", "home", "", "user", ""]
+path.split("/");           // ["", "home", "", "user"]
+path.split("/", -1);       // ["", "home", "", "user", ""]
 
-// StringUtils.split：干净结果
-StringUtils.split(path, "/"); // ["home", "user"]
+// StrUtil.split：干净结果
+StrUtil.split(path, "/");  // ["home", "user"]
 ```
 
 ### 选择原则
@@ -134,10 +128,10 @@ StringUtils.split(path, "/"); // ["home", "user"]
 ├─ 是 → String.split(regex)
 │       └─ 性能敏感？→ Pattern.compile() 预编译
 └─ 否 → 输入可能为 null？
-         ├─ 是 → StringUtils.split()
+         ├─ 是 → StrUtil.split()
          └─ 否 → 需要控制分割次数？
                   ├─ 是 → String.split(str, limit)
-                  └─ 否 → StringUtils.split()（更安全）
+                  └─ 否 → StrUtil.split()（更安全）
 ```
 
 ---
