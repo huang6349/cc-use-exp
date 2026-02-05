@@ -94,7 +94,7 @@
 
 ```
 ~/.claude/
-├── CLAUDE.md          # 项目配置
+├── CLAUDE.md          # 核心配置
 ├── rules/             # 始终加载的规则
 │   ├── bash-style.md
 │   ├── claude-code-defensive.md

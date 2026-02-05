@@ -8,16 +8,19 @@ allowed-tools: Bash(git diff:*), Bash(git status:*), Bash(git log:*), Bash(git s
 ## 上下文信息
 
 GIT STATUS:
+
 ```
 !`git status`
 ```
 
 FILES MODIFIED:
+
 ```
 !`git diff --name-only origin/HEAD... 2>/dev/null || git diff --name-only HEAD~5`
 ```
 
 DIFF CONTENT:
+
 ```
 !`git diff --merge-base origin/HEAD 2>/dev/null || git diff HEAD~5`
 ```
@@ -29,22 +32,26 @@ DIFF CONTENT:
 ## 审查范围
 
 ### 输入验证漏洞
+
 - SQL 注入
 - 命令注入
 - 路径遍历
 - XSS（仅 dangerouslySetInnerHTML 等不安全方法）
 
 ### 认证与授权
+
 - 认证绕过
 - 权限提升
 - 会话管理缺陷
 
 ### 密钥与加密
+
 - 硬编码密钥/密码
 - 弱加密算法
 - 证书验证绕过
 
 ### 代码执行
+
 - 反序列化漏洞
 - eval 注入
 - 模板注入
@@ -61,7 +68,7 @@ DIFF CONTENT:
 
 ## 输出格式
 
-```markdown
+```
 # 安全审查报告
 
 ## 发现的问题

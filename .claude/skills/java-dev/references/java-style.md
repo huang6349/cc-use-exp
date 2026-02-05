@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/*.java"
+  - "**/pom.xml"
+  - "**/build.gradle"
+  - "**/build.gradle.kts"
+---
+
 # Java 开发规范
 
 作者：huangyalong
@@ -8,16 +16,6 @@
 > **部署位置**: `~/.claude/rules/java-style.md`
 > **作用范围**: 所有 Java 项目
 > **参考来源**: Google Java Style Guide、阿里巴巴 Java 开发手册、个人/团队约定
-
----
-paths:
-
-- "**/*.java"
-- "**/pom.xml"
-- "**/build.gradle"
-- "**/build.gradle.kts"
-
----
 
 ## 工具链
 
@@ -703,14 +701,6 @@ spring.datasource:
 ./profiler.sh -d 30 -f profile.html <pid>
 ```
 
-## 规则溯源要求
-
-当回复明确受到本规则约束时，在回复末尾声明：
-
-```
-> 📋 本回复遵循规则：`java-style.md` - [具体章节]
-```
-
 ---
 
 ## 参考资料
@@ -719,3 +709,11 @@ spring.datasource:
 - [阿里巴巴 Java 开发手册](https://github.com/alibaba/p3c)
 - [Effective Java (3rd Edition)](https://www.oreilly.com/library/view/effective-java/9780134686097/)
 - [Spring Boot Best Practices](https://docs.spring.io/spring-boot/docs/current/reference/html/)
+
+---
+
+## 规则溯源
+
+```
+> 📋 本回复遵循：`java-dev/java-style.md` - [具体章节]
+```

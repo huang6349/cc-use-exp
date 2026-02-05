@@ -55,13 +55,13 @@
 
 **macOS/Linux**：
 
-```bash
+```
 ./sync-config.sh
 ```
 
 **Windows**：
 
-```cmd
+```
 sync-config.bat
 ```
 
@@ -79,7 +79,7 @@ sync-config.bat
 <details>
 <summary><strong>Claude Code</strong></summary>
 
-```bash
+```
 # 只覆盖配置目录，保留历史记录
 rm -rf ~/.claude/rules ~/.claude/skills ~/.claude/commands ~/.claude/templates ~/.claude/tasks
 cp -r .claude/rules ~/.claude/
@@ -164,8 +164,6 @@ cp .claude/CLAUDE.md ~/.claude/
 |------|------|---------|
 | `/requirement-interrogate` | 需求极刑审问，挖掘逻辑漏洞 | `/requirement-interrogate 用户要导出数据` |
 | `/design-checklist` | 生成设计质量检查清单 | `/design-checklist` |
-| `/project-init` | 为新项目初始化 Claude Code 配置 | `/project-init` |
-| `/project-scan` | 扫描项目生成配置（CLAUDE.md/restart.sh/ignore/Docker） | `/project-scan` |
 | `/style-extract` | 从代码或设计图提取样式变量 | `/style-extract` |
 | `/status` | 显示当前配置状态（Rules/Skills/LSP） | `/status` |
 
@@ -183,7 +181,6 @@ cp .claude/CLAUDE.md ~/.claude/
 | 复杂 Bug 排查 | `/debug 问题描述` | ⭐⭐⭐ |
 | 安全审查 | `/security-review` | ⭐⭐⭐ |
 | 开发新功能 | `/new-feature 功能名` | ⭐⭐⭐ |
-| 新项目初始化 | `/project-init` | ⭐⭐⭐ |
 
 ```
 遇到 Bug？
@@ -222,7 +219,8 @@ cp .claude/CLAUDE.md ~/.claude/
 
 ### Q: 为什么 Claude 总是先说明计划再执行？
 
-A: 这是 `claude-code-defensive.md` 规则的要求。复杂任务（超过 3 个步骤或涉及多个文件）必须先说明计划，等你确认后再执行。这是为了防止 Claude 盲目修改代码。
+A: 这是 `claude-code-defensive.md` 规则的要求。复杂任务（超过 3 个步骤或涉及多个文件）必须先说明计划，等你确认后再执行。这是为了防止
+Claude 盲目修改代码。
 
 ### Q: 为什么执行系统命令时 Claude 会问很多问题？
 
@@ -301,7 +299,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 
 #### 安装命令
 
-```bash
+```
 # Java (macOS)
 brew install jdtls
 
@@ -341,7 +339,7 @@ LSP 的核心优势是"精准打击"——查找定义时只返回相关代码�
 
 **命令模板**：
 
-```markdown
+```
 ---
 description: 命令的简要描述
 ---
@@ -373,7 +371,7 @@ description: 命令的简要描述
 
 **技能模板**：
 
-```markdown
+```
 ---
 name: skill-name
 description: 当用户操作 xxx 文件时触发。提供 xxx 开发规范。
@@ -392,7 +390,7 @@ description: 当用户操作 xxx 文件时触发。提供 xxx 开发规范。
 
 ### 测试验证
 
-```bash
+```
 # 在本项目目录启动 Claude Code
 cd /path/to/cc-use-exp
 claude
@@ -430,7 +428,7 @@ claude
 
 ### 部署命令
 
-```bash
+```
 # 只覆盖配置目录，保留历史记录
 rm -rf ~/.claude/rules ~/.claude/skills ~/.claude/commands ~/.claude/templates ~/.claude/tasks
 cp -r .claude/rules ~/.claude/

@@ -13,7 +13,7 @@ allowed-tools: Read, Grep, Glob
 | 输入 | 示例 | 说明 |
 |------|------|------|
 | 目录 | `web/src` | 扫描所有样式文件 |
-| 文件 | `Card.tsx` | 分析单个组件 |
+| 文件 | `Card/index.tsx` | 分析单个组件 |
 | 图片 | `design.png` | 识别设计稿样式 |
 | 空 | | 默认扫描 `web/src` |
 
@@ -24,7 +24,8 @@ allowed-tools: Read, Grep, Glob
 ### A1. 扫描样式文件
 
 查找以下文件：
-- `*.tsx` / `*.jsx` 中的样式
+
+- `*.tsx` / `*.jsx` / `*.js` 中的样式
 - `*.css` / `*.scss` / `*.module.scss` 文件
 - Ant Design 主题变量覆盖
 
@@ -40,7 +41,7 @@ allowed-tools: Read, Grep, Glob
 
 ### A3. 输出 JSON
 
-```json
+```
 {
   "source": "代码提取",
   "path": "[扫描路径]",
@@ -52,9 +53,20 @@ allowed-tools: Read, Grep, Glob
   },
   "typography": {
     "font_family": "Helvetica Neue, PingFang SC, ...",
-    "font_sizes": ["12px", "14px", "16px", "18px"]
+    "font_sizes": [
+      "12px",
+      "14px",
+      "16px",
+      "18px"
+    ]
   },
-  "spacing": ["4px", "8px", "12px", "16px", "24px"],
+  "spacing": [
+    "4px",
+    "8px",
+    "12px",
+    "16px",
+    "24px"
+  ],
   "border_radius": {
     "small": "2px",
     "base": "4px",
@@ -78,6 +90,7 @@ allowed-tools: Read, Grep, Glob
 ### B2. 识别样式
 
 从图片中识别：
+
 - **颜色**：主色、辅助色、背景色、文字色
 - **字体**：标题字号、正文字号、字重
 - **间距**：元素间距、内边距规律
@@ -86,7 +99,7 @@ allowed-tools: Read, Grep, Glob
 
 ### B3. 输出 CSS 变量
 
-```css
+```
 :root {
   /* 从设计图识别 - [图片文件名] */
 
@@ -127,6 +140,7 @@ allowed-tools: Read, Grep, Glob
 ## 输出
 
 无论哪种模式，最终输出：
+
 1. 提取的样式变量（JSON 或 CSS 格式）
 2. 与现有规范的差异分析
 3. 统一建议

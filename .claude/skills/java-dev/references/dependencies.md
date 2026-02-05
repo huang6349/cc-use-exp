@@ -46,3 +46,11 @@
     <artifactId>xxx-lib</artifactId>
 </dependency>
 ```
+
+---
+
+## 规则溯源
+
+```
+> 📋 本回复遵循：`java-dev/dependencies.md` - [具体章节]
+```

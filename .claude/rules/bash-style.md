@@ -7,6 +7,7 @@ paths:
   - "**/*.yaml"
   - "**/*.md"
 ---
+
 # Bash 核心规范
 
 > 详细规范见 `skills/bash-style/`，操作 .sh/.md/Dockerfile 等文件时自动加载。
@@ -39,4 +40,8 @@ curl -X POST https://api.example.com
 
 ---
 
-> 📋 本回复遵循：`bash-style.md`
+## 规则溯源
+
+```
+> 📋 本回复遵循：`bash-style.md` - [章节]
+```

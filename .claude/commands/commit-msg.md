@@ -6,7 +6,7 @@
 
 ### 1. 获取变更内容
 
-```bash
+```
 # 查看已暂存的变更
 git diff --cached --stat
 git diff --cached
@@ -33,6 +33,7 @@ git diff
 ### 3. 生成 commit message
 
 格式要求：
+
 ```
 <type>: <subject>
 
@@ -40,6 +41,7 @@ git diff
 ```
 
 规则：
+
 - subject: 简洁描述，不超过 50 字符，中文
 - body: 变更详情，用列表形式，中文
 - 不要加 emoji
@@ -56,6 +58,7 @@ git diff
 - <变更点1>
 - <变更点2>
 - <变更点3>
+
 ---
 
 ## 变更文件
@@ -73,5 +76,6 @@ git add . && git commit -m "<生成的message>"
 ---
 
 参数说明：
+
 - 无参数：分析已暂存的变更
 - `$ARGUMENTS` 包含 "all"：分析所有变更（含未暂存）

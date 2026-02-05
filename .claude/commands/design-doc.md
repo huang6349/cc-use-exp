@@ -10,8 +10,8 @@ description: 生成技术设计文档框架
 
 # [功能名称] 设计文档
 
-作者：wwj
-版本：v1.0
+作者：huangyalong
+版本：v1.0.0
 日期：[当前日期]
 状态：草稿
 
@@ -47,7 +47,7 @@ description: 生成技术设计文档框架
 
 ### 4.1 新增/修改表
 
-```sql
+```
 -- [表名] - [说明]
 CREATE TABLE / ALTER TABLE ...
 ```
@@ -110,6 +110,7 @@ CREATE TABLE / ALTER TABLE ...
 ```
 
 **实现位置**：
+
 - Controller: `[文件路径]`
 - Service: `[文件路径]`
 
@@ -127,7 +128,7 @@ CREATE TABLE / ALTER TABLE ...
 
 **文件位置**：`[文件路径]`
 
-```typescript
+```
 // 关键代码片段
 ```
 
@@ -169,7 +170,7 @@ CREATE TABLE / ALTER TABLE ...
 
 ### 10.1 数据库迁移
 
-```sql
+```
 -- 迁移脚本
 ```
 
@@ -185,4 +186,4 @@ CREATE TABLE / ALTER TABLE ...
 
 | 版本 | 日期 | 作者 | 说明 |
 |------|------|------|------|
-| v1.0 | [日期] | wwj | 初稿 |
+| v1.0.0 | [日期] | huangyalong | 初稿 |
