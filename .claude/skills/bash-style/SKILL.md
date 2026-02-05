@@ -245,7 +245,3 @@ EOF
 - [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html)
 - [Bash Pitfalls](https://mywiki.wooledge.org/BashPitfalls)
 - [ShellCheck](https://www.shellcheck.net/)
-
----
-
-> 📋 本回复遵循：`bash-style`

@@ -11,10 +11,12 @@
 
 ---
 paths:
-  - "**/*.java"
-  - "**/pom.xml"
-  - "**/build.gradle"
-  - "**/build.gradle.kts"
+
+- "**/*.java"
+- "**/pom.xml"
+- "**/build.gradle"
+- "**/build.gradle.kts"
+
 ---
 
 ## 工具链
