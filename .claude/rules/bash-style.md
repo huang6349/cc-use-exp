@@ -16,7 +16,7 @@ paths:
 
 ## 禁止行尾注释
 
-```bash
+```
 # ❌ 错误
 curl -X POST https://api.example.com # 发送请求
 
