@@ -28,7 +28,7 @@
 | 场景 | 首选 | 备选 |
 |------|------|------|
 | 后端 | Java | - |
-| 前端 | React + TS/JS + Vite + AntD | Vue 3 + Element Plus |
+| 前端 | React 18 + Ant Design | Vue 3 + Element Plus |
 | 数据库 | MySQL | PostgreSQL |
 | 缓存 | Redis | - |
 
