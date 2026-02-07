@@ -15,8 +15,8 @@ paths:
 # 前端开发与 UI 风格规范
 
 作者：huangyalong
-版本：v1.0.0
-日期：2026-02-06
+版本：v1.1.0
+日期：2026-02-07
 状态：草稿
 
 > **部署位置**: `~/.claude/rules/frontend-style.md`
@@ -368,7 +368,23 @@ const {
 } = props;
 ```
 
-### 3.5 样式规范
+### 3.5 布尔值表示
+
+```
+// ✅ 好：使用 !0 / !1 表示 true / false
+const config = {
+  immediate: !0,     // 立即执行
+  disabled: !1,      // 禁用
+};
+
+// ❌ 差：直接使用 true / false
+const config = {
+  immediate: true,
+  disabled: false,
+};
+```
+
+### 3.6 样式规范
 
 ```
 // ✅ 好：使用 CSS Modules 防止样式污染
