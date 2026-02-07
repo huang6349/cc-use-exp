@@ -10,7 +10,6 @@ paths:
   - "**/*.less"
   - "**/*.html"
   - "**/package.json"
-  - "**/vite.config.*"
 ---
 
 # 前端开发与 UI 风格规范

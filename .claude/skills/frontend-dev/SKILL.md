@@ -1,22 +1,22 @@
 ---
 name: frontend-dev
-description: 前端开发规范，包含 React 编码规范、UI 风格约束、TypeScript 规范等
-version: v3.0
+description: 前端开发规范，包含 React 编码规范、UI 风格约束、TS/JS 规范等
+version: v1.0.0
 paths:
   - "**/*.tsx"
   - "**/*.jsx"
+  - "**/*.vue"
   - "**/*.ts"
   - "**/*.js"
   - "**/*.css"
   - "**/*.scss"
   - "**/*.less"
   - "**/package.json"
-  - "**/vite.config.*"
 ---
 
 # 前端开发规范
 
-> 参考来源: React 官方文档、Ant Design 最佳实践、个人/团队约定
+> 参考来源: React 官方风格指南、Ant Design 最佳实践、个人/团队约定
 
 ---
 
@@ -24,29 +24,29 @@ paths:
 
 ### 严格禁止（常见 AI 风格）
 
-- ❌ 蓝紫色霓虹渐变、发光描边、玻璃拟态
-- ❌ 大面积渐变、过多装饰性几何图形
-- ❌ 赛博风、暗黑科技风、AI 风格 UI
+- ❌ 蓝紫色霓虹渐变背景、发光描边、玻璃拟态
+- ❌ 大面积渐变、过多装饰性几何图形、无意义的动效堆叠
 - ❌ UI 文案中使用 emoji
+- ❌ 赛博风、暗黑科技风、AI 风格 UI
 
 ### 后台系统（默认风格）
 
 | 要素 | 要求 |
-|------|------|
-| 主题 | 使用 Ant Design 默认主题 |
+|-----|-----|
+| 主题 | 使用组件库默认主题 |
 | 配色 | 黑白灰为主 + 1 个主色点缀 |
-| 动效 | 克制，仅保留必要交互反馈 |
+| 动效 | 克制，仅保留必要的交互反馈 |
 
 ---
 
 ## 技术栈
 
 | 层级 | React（首选） | Vue（备选） |
-|------|-------------|-------------|
-| 框架 | React 18 + TypeScript | Vue 3 + TypeScript |
-| 构建 | Vite | Vite |
+|------|------------|--------------|
+| 框架 | React 18 + TS/JS | Vue 3 + TS/JS |
+| 构建 | Umi | Vite |
 | 路由 | React Router 6 | Vue Router 4 |
-| 状态 | Zustand | Pinia |
+| 状态 | Valtio | Pinia |
 | UI 库 | Ant Design | Element Plus |
 
 ---
@@ -55,174 +55,172 @@ paths:
 
 ### 组件基础
 
-```tsx
-// UserCard.tsx
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import type { User } from '@/types'
-import { Card, Button, Spin } from 'antd'
+```
+// UserCard/index.tsx
+import type { User } from '@/types';
+import type { UserCardProps } from './types';
+import { withResponse } from '@/hofs';
+import { modal } from '@/hocs';
+import { Button } from 'antd';
+import { Card } from 'antd';
+import { Spin } from 'antd';
+import { useMemo } from 'react';
+import { useRequest } from 'alova/client';
+import { useSnapshot } from 'valtio';
+import service from './service';
+import state from './state';
+import styles from './index.scss';
 
-interface Props {
-  userId: number
+const UserCard = (
+  props: UserCardProps,
+) => {
+  // 1. Props 解构
+  const {
+    userId,
+    title,
+    onDelete,
+  } = props;
+
+  // 2. 内部状态
+  const {
+    user,
+  } = useSnapshot(state);
+
+  // 3. 查询请求
+  const {
+    loading,
+  } = useRequest(() => (
+    service.queryById(userId)
+  ), {
+    immediate: !0,
+  }).onSuccess(withResponse((data: User) => (
+    state.user = data
+  )));
+
+  // 4. 删除请求
+  const {
+    send: removeById,
+  } = useRequest(() => (
+    service.removeById(userId)
+  ), {
+    immediate: !1,
+  }).onSuccess(withResponse(() => (
+    onDelete?.(userId)
+  )));
+
+  // 5. 事件处理函数
+  const handleDelete = () => {
+    modal?.confirm({
+      content: '您确认要执行删除操作吗',
+      title: '删除提示',
+      onOk: () => {
+        removeById();
+      },
+    });
+  };
+
+  // 6. 计算属性
+  const displayName = useMemo(() => (
+    user?.name ?? '未知用户'
+  ), [user?.name]);
+
+  // 7. 状态守卫
+  if (loading) return <Spin />;
+  return (<Card
+    className={styles['card']}
+    title={title}>
+    <h3>{displayName}</h3>
+    <Button onClick={handleDelete}>删除</Button>
+  </Card>);
+};
+
+UserCard.defaultProps = {
+  title: '用户信息',
+};
+
+export default UserCard;
+
+// UserCard/index.scss
+.card:global(.ant-card) {
+  padding: 16px;
 }
 
-export function UserCard({ userId }: Props) {
-  // 响应式状态
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
+// UserCard/service.ts
+import type { User } from '@/types';
+import { safeRequest } from '@/utils';
 
-  // 计算属性
-  const displayName = useMemo(() => user?.name ?? '未知用户', [user])
+export const queryById = (id: string) => id ? (
+  safeRequest.Get<User>(`/api/user/${id}`)
+) : null;
 
-  // 回调函数
-  const handleRefresh = useCallback(async () => {
-    setLoading(true)
-    try {
-      const data = await api.getUser(userId)
-      setUser(data)
-    } finally {
-      setLoading(false)
-    }
-  }, [userId])
+export const removeById = (id: string) => id ? (
+  safeRequest.Delete<boolean>(`/api/user/${id}`)
+) : null;
 
-  // 生命周期
-  useEffect(() => {
-    handleRefresh()
-  }, [handleRefresh])
+export default {
+  queryById,
+  removeById,
+};
 
-  if (loading) return <Spin />
+// UserCard/state.ts
+import { proxy } from 'valtio';
 
-  return (
-    <Card title={displayName}>
-      <Button onClick={handleRefresh}>刷新</Button>
-    </Card>
-  )
-}
+export type STATE = Record<string, any>;
+
+export default proxy<STATE>({
+  user: null,
+});
+
+// UserCard/types.ts
+export type UserCardProps = {
+  userId: string;
+  title?: string;
+  onDelete?: (id: string) => void;
+};
 ```
 
 ### 命名约定
 
 | 类型 | 约定 | 示例 |
-|------|------|------|
-| 业务组件文件 | PascalCase.js | `UserList.js` |
-| 通用组件文件 | PascalCase.tsx | `UserList.tsx` |
-| 业务 Hooks | useXxx.js | `useUserList.js` |
-| 通用 Hooks | useXxx.ts | `useUserList.ts` |
-| Store | XxxStore.ts | `UserStore.ts` |
+|-----|-----|-----|
+| 组件文件 | `ComponentName/index.tsx` | `UserCard/index.tsx` |
+| 样式文件 | `ComponentName/index.scss` | `UserCard/index.scss` |
+| 状态文件 | `ComponentName/state.ts` | `UserCard/state.ts` |
 
 ---
 
-## 状态管理（Zustand）
+## 状态管理（Valtio）
 
-```typescript
-// stores/userStore.ts
-import { create } from 'zustand'
-import type { User } from '@/types'
+```
+// ComponentName/state.ts
+import { proxy } from 'valtio';
 
-interface UserState {
-  user: User | null
-  token: string
-  isLoggedIn: boolean
-  login: (username: string, password: string) => Promise<void>
-}
+export type STATE = Record<string, any>;
 
-export const useUserStore = create<UserState>((set) => ({
+export default proxy<STATE>({
   user: null,
-  token: '',
-  isLoggedIn: false,
-
-  async login(username: string, password: string) {
-    const res = await api.login(username, password)
-    set({ token: res.token, user: res.user, isLoggedIn: true })
-  },
-}))
+});
 ```
 
 ---
 
-## 交互状态处理
+## TS 规范
 
-**必须处理的状态**: loading、empty、error、disabled、submitting
-
-```tsx
-if (loading) return <Spin />
-if (error) return <Result status="error" title={error} extra={<Button onClick={retry}>重试</Button>} />
-if (list.length === 0) return <Empty description="暂无数据" />
-
-// 正常内容
 ```
+// components/SysButton/types.ts
+import type { ComponentProps } from 'react';
+import { Button } from 'antd';
 
----
+export type SysButtonProps = ComponentProps<typeof Button> & {
+  invisible?: boolean | (() => boolean);
+};
 
-## 编码语言选择
-
-| 场景 | 语言 | 说明 |
-|------|------|------|
-| 业务页面/组件 | **JavaScript** | 快速开发，减少类型声明噪音 |
-| 通用组件/Hooks | **TypeScript** | 强类型确保复用安全 |
-| 工具函数库 | TypeScript | 类型导出便于消费方 |
-
-### JavaScript 业务代码示例
-
-```jsx
-// pages/user/UserList.js
-import { useState, useEffect } from 'react'
-import { Table, Button, message } from 'antd'
-
-export function UserList() {
-  const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
-
-  const loadUsers = async () => {
-    setLoading(true)
-    try {
-      const data = await api.getUsers()
-      setUsers(data)
-    } catch (e) {
-      message.error('加载失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  return (
-    <Table
-      loading={loading}
-      dataSource={users}
-      columns={[
-        { title: '姓名', dataIndex: 'name' },
-        { title: '邮箱', dataIndex: 'email' },
-      ]}
-    />
-  )
-}
-```
-
-### TypeScript 通用组件示例
-
-```tsx
-// components/Form/BaseForm.tsx
-import { useCallback, useMemo } from 'react'
-import type { FormProps } from 'antd'
-
-interface BaseFormProps<T = Record<string, unknown>> {
-  initialValues?: T
-  onSubmit: (values: T) => Promise<void>
-}
-
-export function BaseForm<T extends Record<string, unknown>>({
-  initialValues,
-  onSubmit,
-}: BaseFormProps<T>) {
-  const handleSubmit = useCallback(async (values: T) => {
-    await onSubmit(values)
-  }, [onSubmit])
-
-  return <Form initialValues={initialValues} onFinish={handleSubmit} />
-}
+// components/UserCard/types.ts
+export type UserCardProps = {
+  userId: string;
+  title?: string;
+  onDelete?: (id: string) => void;
+};
 ```
 
 ---
@@ -232,19 +230,7 @@ export function BaseForm<T extends Record<string, unknown>>({
 | 场景 | 方案 |
 |------|------|
 | 大列表 | 虚拟滚动 |
-| 路由 | 懒加载 `() => import()` |
-| 计算 | 使用 `useMemo` 缓存 |
-| 大数据 | 使用 `useRef` |
-
-```typescript
-// 路由懒加载
-const routes = [
-  { path: '/dashboard', element: <Dashboard /> }
-]
-
-// 懒加载组件
-const HeavyComponent = lazy(() => import('@/components/HeavyComponent'))
-```
+| 计算 | 精简依赖 |
 
 ---
 
@@ -252,16 +238,19 @@ const HeavyComponent = lazy(() => import('@/components/HeavyComponent'))
 
 ```
 src/
-├── api/                 # API 请求
+├── assets/              # 静态资源
 ├── components/          # 通用组件
-├── hooks/               # 自定义 Hooks
-├── router/              # 路由配置
-├── stores/              # Zustand stores
-├── types/               # TypeScript 类型
+├── constants/           # 常量
+├── hocs/                # 高阶组件
+├── hofs/                # 高阶函数
+├── hooks/               # Hooks
+├── layouts/             # 布局组件
+├── models/              # Valtio
+├── pages/               # 页面
+├── services/            # 服务层
 ├── utils/               # 工具函数
-├── pages/               # 页面组件
-├── App.tsx
-└── main.tsx
+├── access.js
+└── app.js
 ```
 
 ---
@@ -269,9 +258,10 @@ src/
 ## 详细参考
 
 完整规范见 `references/frontend-style.md`，包含：
+
 - 完整 UI 风格约束
 - React 编码规范详解
-- Zustand 状态管理
+- Valtio 状态管理
 - API 请求封装
 - 性能优化详解
 
