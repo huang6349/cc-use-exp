@@ -53,7 +53,7 @@ paths:
 **目标**: "像一个成熟企业后台"，而不是宣传页
 
 | 要素 | 要求 |
-|---|---|
+|-----|-----|
 | 主题 | 使用组件库默认主题 + 默认布局 |
 | 配色 | 黑白灰为主 + 1 个主色点缀，避免渐变 |
 | 信息密度 | 适中，表格、筛选、分页、表单用标准组件 |
@@ -90,7 +90,7 @@ paths:
 ### 2.1 React 技术栈（首选）
 
 | 层级 | 选择 |
-|---|---|
+|-----|-----|
 | 框架 | React 18 + TS/JS |
 | 构建 | Umi |
 | 路由 | React Router 6 |
@@ -101,7 +101,7 @@ paths:
 ### 2.2 Vue 技术栈（备选）
 
 | 层级 | 选择 |
-|---|---|
+|-----|-----|
 | 框架 | Vue 3 + TS/JS |
 | 构建 | Vite |
 | 路由 | Vue Router 4 |
@@ -259,7 +259,7 @@ export type UserCardProps = {
 ### 3.2 命名约定
 
 | 类型 | 约定 | 示例 |
-|---|---|---|
+|-----|-----|-----|
 | 组件目录 | 可复用放 `components/`，页面放 `pages/xxx/components/` | |
 | 组件文件 | `ComponentName/index.tsx` | `UserCard/index.tsx` |
 | 样式文件 | `ComponentName/index.scss` | `UserCard/index.scss` |
@@ -409,7 +409,11 @@ export type STATE = Record<string, any>;
 export default proxy<STATE>({
   user: null,
 });
+```
 
+### 4.2 在组件中使用
+
+```
 // ComponentName/index.tsx
 import type { User } from '@/types';
 import type { UserCardProps } from './types';
@@ -422,18 +426,12 @@ import state from './state';
 const UserCard = (
   props: UserCardProps,
 ) => {
-  // 1. Props 解构
+  // 1. State & Hooks
   const {
-    ...
-  } = props;
-
-  // 2. State & Hooks
-  const {
-    role,
     ...
   } = useSnapshot(state);
 
-  // 3. 数据请求
+  // 2. 数据请求
   const {
     ...
   } = useRequest((...)) => (
@@ -446,21 +444,6 @@ const UserCard = (
 };
 ```
 
-### 4.2 在组件中使用
-
-```
-import { userState, login, logout } from '@/stores/userStore'
-import { useSnapshot } from 'valtio'
-
-function UserInfo() {
-  // ✅ 好：使用 useSnapshot 订阅状态
-  const snap = useSnapshot(userState)
-
-  // ✅ 好：直接访问状态
-  const { user, isLoggedIn } = snap
-}
-```
-
 ---
 
 ## 5. API 请求规范
@@ -470,333 +453,474 @@ function UserInfo() {
 ### 5.1 API 模块组织
 
 ```
-// api/index.ts - 统一导出
-export * from './user'
-export * from './site'
+// ComponentName/service.ts
+import type { User } from '@/types';
+import { safeRequest } from '@/utils';
 
-// api/user.ts - 用户相关 API
-import request from '@/utils/request'
-import type { User, LoginParams, LoginResult } from '@/types'
+/** 根据编号查询用户 */
+export const queryById = (id: string) => id ? (
+  safeRequest.Get<User>(`/api/user/${id}`)
+) : null;
 
-export function login(params: LoginParams): Promise<LoginResult> {
-  return request.post('/api/v1/login', params)
-}
+/** 根据编号删除用户 */
+export const removeById = (id: string) => id ? (
+  safeRequest.Delete<boolean>(`/api/user/${id}`)
+) : null;
 
-export function getUserInfo(): Promise<User> {
-  return request.get('/api/v1/user/info')
-}
-
-export function updateUser(id: number, data: Partial<User>): Promise<User> {
-  return request.put(`/api/v1/users/${id}`, data)
-}
+/** 统一导出 */
+export default {
+  queryById,
+  removeById,
+};
 ```
 
 ### 5.2 请求封装
 
 ```
-// utils/request.ts
-import axios from 'axios'
-import { message } from 'antd'
-import { userState } from '@/stores/userStore'
+// utils/safeRequest.ts
+import { createAlova } from 'alova';
+import { axiosRequestAdapter } from '@alova/adapter-axios';
+import ReactHook from 'alova/react';
+import { notification } from '@/components';
+import { message } from '@/components';
+import { delay } from '@/utils';
+import { safeToken } from '@/utils';
+import { TOKEN_NAME } from '@/constants';
 
-const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000
-})
+const ERROR_MSG_NETWORK = '请求没有得到响应，请检查网络设置';
 
-// 请求拦截
-request.interceptors.request.use(config => {
-  if (userState.token) {
-    config.headers.Authorization = `Bearer ${userState.token}`
-  }
-  return config
-})
-
-// 响应拦截
-request.interceptors.response.use(
-  response => {
-    const { code, message: msg, data } = response.data
-    if (code === 0) {
-      return data
-    }
-    message.error(msg || '请求失败')
-    return Promise.reject(new Error(msg))
+const safeRequest = createAlova({
+  requestAdapter: axiosRequestAdapter(),
+  statesHook: ReactHook,
+  shareRequest: !1,
+  cacheFor: null,
+  timeout: 5000,
+  async beforeRequest(method) {
+    method.config.headers[TOKEN_NAME] = await safeToken.get();
   },
-  error => {
-    message.error(error.message || '网络错误')
-    return Promise.reject(error)
+  responded: {
+    async onSuccess(response) {
+      try {
+        const {
+          headers,
+          // @ts-ignore
+          data: res,
+        } = response;
+        await delay(350);
+        const token = headers?.[TOKEN_NAME];
+        token && await safeToken.set(token);
+        if (res?.code === 401)
+          await safeToken.remove();
+        if (!res?.success)
+          errorThrower(res);
+        const contentType = headers?.['content-type'];
+        if (contentType?.includes?.('application/octet-stream'))
+          downloadFile(headers, res);
+        return res;
+      } catch (error) {
+        const {
+          // @ts-ignore
+          data: res,
+        } = response;
+        await errorHandler(error);
+        return res;
+      }
+    },
+    onError() {
+      message?.error(ERROR_MSG_NETWORK);
+    },
+  },
+});
+
+const downloadFile = (headers: Record<string, any>, data: Blob) => {
+  const contentDisposition = headers?.['content-disposition'];
+  if (contentDisposition?.includes?.('filename=')) {
+    // 提取文件名
+    const filename = contentDisposition
+      .split('filename=')[1]
+      .split(';')[0]
+      .replace(/['"]/g, '');
+    if (!filename) return;
+    // 创建下载链接
+    const elink = document.createElement('a');
+    elink.download = decodeURIComponent(filename); // 解码文件名
+    elink.style.display = 'none';
+    elink.href = URL.createObjectURL(data);
+    document.body.appendChild(elink);
+    elink.click();
+    URL.revokeObjectURL(elink.href); // 释放 URL 对象
+    document.body.removeChild(elink);
   }
-)
+};
 
-export default request
-```
-
----
-
-## 6. 交互状态规范
-
-<!-- [注释] 完整的交互状态是用户体验的基础 -->
-
-### 6.1 必须处理的状态
-
-| 状态 | 说明 | 示例 |
-|---|---|---|
-| loading | 加载中 | Spin、Skeleton |
-| empty | 空数据 | Empty 组件 |
-| error | 错误 | Result + 重试按钮 |
-| disabled | 禁用 | Button disabled |
-| submitting | 提交中 | Button loading + 防重复 |
-
-### 6.2 示例实现
-
-```
-function UserList() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [list, setList] = useState<Item[]>([])
-
-  async function fetchData() {
-    setLoading(true)
-    setError('')
-    try {
-      const data = await api.getList()
-      setList(data)
-    } catch (e) {
-      setError(e.message || '加载失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 加载状态
-  if (loading) return <Spin />
-
-  // 错误状态
-  if (error) return (
-    <Result
-      status="error"
-      title={error}
-      extra={<Button onClick={fetchData}>重试</Button>}
-    />
-  )
-
-  // 空状态
-  if (list.length === 0) return <Empty description="暂无数据" />
-
-  // 正常内容
-  return (
-    <List
-      dataSource={list}
-      renderItem={item => <List.Item>{item.name}</List.Item>}
-    />
-  )
+enum ErrorShowType {
+  SILENT = 0,
+  WARN_MESSAGE = 1,
+  ERROR_MESSAGE = 2,
+  NOTIFICATION = 3,
+  REDIRECT = 9,
 }
+
+const errorHandler = async (error: any) => {
+  if (error.name === 'BizError') {
+    if (error.info) {
+      const {
+        errorMessage,
+        errorCode,
+        showType,
+      } = error.info;
+      switch (showType) {
+        case ErrorShowType.SILENT:
+          break;
+        case ErrorShowType.WARN_MESSAGE:
+          message?.warning(errorMessage);
+          break;
+        case ErrorShowType.ERROR_MESSAGE:
+          message?.error(errorMessage);
+          break;
+        case ErrorShowType.REDIRECT:
+          break;
+        case ErrorShowType.NOTIFICATION:
+          notification?.error({
+            description: errorMessage,
+            message: errorCode,
+          });
+          break;
+        default:
+          message?.error(errorMessage);
+      }
+    }
+  } else {
+    message?.error(ERROR_MSG_NETWORK);
+  }
+};
+
+const errorThrower = (res: any) => {
+  const {
+    success,
+    data,
+    message: errorMessage,
+    code: errorCode,
+    showType,
+  } = res;
+  if (success) return;
+  const error: any = new Error(errorMessage);
+  error.name = 'BizError';
+  error.info = {
+    data,
+    errorMessage,
+    errorCode,
+    showType,
+  };
+  throw error;
+};
+
+export default safeRequest;
 ```
 
 ---
-
-## 7. JS 和 TS 使用规范
 
 <!-- [注释] 业务代码用 JS，通用组件用 TS -->
 
-### 7.1 语言选择原则
+### 6.1 语言选择原则
 
-| 场景 | 语言 | 说明 |
-|---|---|---|
-| 业务页面/组件 | **JS** | 快速开发，减少类型声明噪音 |
-| 通用组件/Hooks | **TS** | 强类型确保复用安全 |
-| 工具函数库 | TS | 类型导出便于消费方 |
+- 业务页面/组件：用 **JS**（快速开发，减少类型声明噪音）
+- 通用组件：用 **TS**（强类型确保复用安全）
+- 自定义 Hooks：用 **TS**（类型导出便于复用）
+- 工具函数：用 **TS**（类型导出便于消费方）
+- 使用 **TS** 时，禁止大范围使用 `any`
 
-### 7.2 JS 业务代码示例
-
-```
-// pages/user/UserList.js
-import { useState, useEffect } from 'react'
-import { Table, Button, message } from 'antd'
-
-export function UserList() {
-  const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
-
-  const loadUsers = async () => {
-    setLoading(true)
-    try {
-      const data = await api.getUsers()
-      setUsers(data)
-    } catch (e) {
-      message.error('加载失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  return (
-    <Table
-      loading={loading}
-      dataSource={users}
-      columns={[
-        { title: '姓名', dataIndex: 'name' },
-        { title: '邮箱', dataIndex: 'email' },
-      ]}
-    />
-  )
-}
-```
-
-### 7.3 TS 通用组件示例
+### 6.2 JS 业务代码示例
 
 ```
-// components/Form/BaseForm.tsx
-import { useCallback } from 'react'
-import type { FormProps } from 'antd'
+// pages/user/index.js
+import { useRef } from 'react';
+import { eq } from 'lodash-es';
+import qs from 'query-string';
+import { Divider } from 'antd';
+import { TableDropdown } from '@ant-design/pro-components';
+import { useAccess } from '@umijs/max';
+import { useRequest } from 'alova/client';
+import { history } from '@umijs/max';
+import { withResponse } from '@/hofs';
+import { withAuth } from '@/hocs';
+import { modal } from '@/hocs';
+import { SysContainer } from '@/components';
+import { SysProTable } from '@/components';
+import { SysButton } from '@/components';
+import service from './service';
+import columns from './columns';
 
-interface BaseFormProps<T = Record<string, unknown>> {
-  initialValues?: T
-  onSubmit: (values: T) => Promise<void>
-}
+const IndexPage = withAuth(() => {
+  // State & Hooks
+  const actionRef = useRef();
+  const formRef = useRef();
+  const access = useAccess();
 
-export function BaseForm<T extends Record<string, unknown>>({
-  initialValues,
-  onSubmit,
-}: BaseFormProps<T>) {
-  const handleSubmit = useCallback(async (values: T) => {
-    await onSubmit(values)
-  }, [onSubmit])
+  // 数据交互
+  const {
+    send: removeById,
+  } = useRequest((id) => (
+    service.removeById(id)
+  ), {
+    immediate: !1,
+  }).onSuccess(withResponse(() => (
+    actionRef?.current?.reload()
+  )));
 
-  return <Form initialValues={initialValues} onFinish={handleSubmit} />
-}
+  // 事件处理
+  const handleView = (record) => {
+    history.push({
+      pathname: `/system/user/view`,
+      search: qs.stringify({
+        id: record?.id,
+      }),
+    });
+  };
+
+  const handleCreate = () => (() => {
+    history.push({
+      pathname: `/system/user/create`,
+      search: qs.stringify({}),
+    });
+  });
+
+  const handleUpdate = (record) => (() => {
+    history.push({
+      pathname: `/system/user/update`,
+      search: qs.stringify({
+        id: record?.id,
+      }),
+    });
+  });
+
+  const handleDelete = (record) => (() => {
+    modal?.confirm({
+      content: '您确认要执行删除操作吗',
+      title: '删除提示',
+      onOk: () => (
+        removeById(record?.id)
+      ),
+    });
+  });
+
+  // 渲染输出
+  return (<SysContainer>
+    <SysProTable
+      rowKey='id'
+      name='用户信息'
+      request={service.dataPage()}
+      scroll={{ x: 1300 }}
+      cardBordered={!0}
+      actionRef={actionRef}
+      formRef={formRef}
+      rowSelection={{}}
+      columns={columns({
+        title: '操作',
+        width: 138,
+        dataIndex: 'option',
+        fixed: 'right',
+        valueType: 'option',
+        search: !1,
+        hideInTable: !1,
+        hideInDescriptions: !1,
+        render: (_, record) => [
+          <SysButton
+            key='editable'
+            type='link'
+            onClick={handleUpdate(record)}
+            disabled={!access?.$user$update}>
+            编辑
+          </SysButton>,
+          <SysButton
+            key='delete'
+            type='link'
+            onClick={handleDelete(record)}
+            disabled={!access?.$user$delete}>
+            删除
+          </SysButton>,
+          <Divider
+            key='divider'
+            type='vertical' />,
+          <TableDropdown
+            key={'action'}
+            onSelect={(key) => {
+              eq(key, 'view') && handleView(record);
+            }}
+            menus={[{
+              key: 'view',
+              name: '详情',
+              disabled: !access?.$user$query,
+            }]}
+          />,
+        ],
+      })}
+      toolBarRender={() => [
+        <SysButton
+          key='create'
+          type='primary'
+          onClick={handleCreate()}
+          invisible={!access?.$user$create}>
+          新建
+        </SysButton>,
+      ]} />
+  </SysContainer>);
+});
+
+export default IndexPage;
 ```
 
-### 7.4 类型定义位置
+### 6.3 TS 通用组件示例
+
+```
+// components/SysButton/index.tsx
+import type { SysButtonProps } from './types';
+import { isFunction } from 'lodash-es';
+import { Button } from 'antd';
+import { useMemo } from 'react';
+
+// 组件定义
+const SysButton = (
+  props: SysButtonProps,
+) => {
+  // Props 解构
+  const {
+    className,
+    invisible,
+    ...buttonProps
+  } = props;
+
+  // 计算属性
+  const hidden = useMemo(() => {
+    if (isFunction(invisible)) {
+      return invisible();
+    } else return invisible;
+  }, [invisible]);
+
+  // 渲染输出
+  if (hidden)
+    return null;
+  return (<Button
+    className={className}
+    {...buttonProps}
+  />);
+};
+
+// 默认属性
+SysButton.defaultProps = {
+  invisible: !1,
+};
+
+// 统一导出
+export default SysButton;
+
+// components/SysButton/types.ts
+import type { ComponentProps } from 'react';
+import { Button } from 'antd';
+
+export type SysButtonProps = ComponentProps<typeof Button> & {
+  invisible?: boolean | (() => boolean);
+};
+```
+
+### 6.4 类型定义位置
 
 ```
 src/
+├── components/
+│   └── ComponentName/
+│       └── types.ts    # 组件专用类型
 ├── types/
 │   ├── index.ts        # 统一导出
 │   ├── user.ts         # 用户相关类型
-│   ├── site.ts         # 站点相关类型
-│   └── api.ts          # API 通用类型
+│   └── site.ts         # 站点相关类型
 ```
 
-### 7.5 类型定义示例
+### 6.5 类型定义示例
 
 ```
-// types/user.ts
-export interface User {
-  id: number
-  username: string
-  email: string
-  role: 'admin' | 'user'
-  createdAt: string
-}
+// components/SysButton/types.ts
+import type { ComponentProps } from 'react';
+import { Button } from 'antd';
 
-export interface LoginParams {
-  username: string
-  password: string
-}
+export type SysButtonProps = ComponentProps<typeof Button> & {
+  invisible?: boolean | (() => boolean);
+};
 
-export interface LoginResult {
-  token: string
-  user: User
-}
-
-// types/api.ts
-export interface ApiResponse<T = unknown> {
-  code: number
-  message: string
-  data: T
-}
-
-export interface PageParams {
-  page: number
-  pageSize: number
-}
-
-export interface PageResult<T> {
-  list: T[]
-  total: number
-}
+// components/UserCard/types.ts
+/** 用户卡片组件 Props */
+export type UserCardProps = {
+  /** 用户编号（必填） */
+  userId: string;
+  /** 卡片标题（可选，有默认值） */
+  title?: string;
+  /** 删除回调（可选） */
+  onDelete?: (id: string) => void;
+};
 ```
 
 ---
 
-## 8. 目录结构
-
-<!-- [注释] 推荐的前端项目结构 -->
+## 7. 目录结构
 
 ```
 web/
+├── config/                     # 项目配置
+├── dist/                       # 构建产物
+├── mock/                       # Mock
 ├── src/
-│   ├── api/                 # API 请求模块
+│   ├── assets/                 # 静态资源
+│   ├── components/             # 通用组件
 │   │   ├── index.ts
-│   │   ├── user.ts
-│   │   └── site.ts
-│   ├── assets/              # 静态资源
-│   │   ├── images/
-│   │   └── styles/
-│   ├── components/          # 通用组件
-│   │   ├── common/         # 基础通用组件
-│   │   └── business/       # 业务通用组件
-│   ├── hooks/               # 自定义 Hooks
-│   │   ├── useAuth.ts
-│   │   └── useTable.ts
-│   ├── layouts/             # 布局组件
-│   │   └── DefaultLayout.tsx
-│   ├── router/              # 路由配置
-│   │   └── index.tsx
-│   ├── stores/              # Valtio stores
+│   │   ├── SysProTable/        # 业务通用表格
+│   │   └── SysForm/            # 业务通用表单
+│   ├── constants/              # 常量
+│   ├── hocs/                   # 高阶组件
 │   │   ├── index.ts
-│   │   └── userStore.ts
-│   ├── types/               # TS 类型
-│   │   └── index.ts
-│   ├── utils/               # 工具函数
-│   │   ├── request.ts
-│   │   └── format.ts
-│   ├── pages/               # 页面组件
-│   │   ├── home/
-│   │   └── user/
-│   ├── App.tsx
-│   └── main.tsx
-├── index.html
+│   │   ├── withAuth.tsx        # 权限控制
+│   │   └── withApp.tsx         # 应用级注入
+│   ├── hofs/                   # 高阶函数
+│   │   ├── index.ts
+│   │   ├── withTable.ts        # 表格增强
+│   │   └── withResponse.ts     # 响应处理
+│   ├── hooks/                  # Hooks
+│   │   ├── index.ts
+│   │   └── useAsyncEffect.ts
+│   ├── layouts/                # 布局组件
+│   ├── models/                 # Valtio
+│   ├── pages/                  # 页面
+│   │   ├── index.js
+│   │   ├── login/
+│   │   └── system/
+│   ├── services/               # 服务层
+│   │   ├── index.js
+│   │   ├── user.js
+│   │   └── dict.js
+│   ├── utils/                  # 工具函数
+│   │   ├── index.ts            # 统一导出
+│   │   ├── safeToken.ts        # Token
+│   │   └── safeRequest.ts      # 统一请求
+│   ├── access.js               # 权限配置
+│   ├── app.js                  # 应用配置
+│   ├── global.scss             # 全局样式
+│   └── overrides.scss          # 样式覆盖
+├── .env
+├── jsconfig.json
 ├── package.json
 ├── tsconfig.json
-└── vite.config.ts
+└── typings.d.ts
 ```
 
 ---
 
-## 9. 代码检查工具
-
-<!-- [注释] 可根据项目实际配置调整 -->
-
-### 9.1 推荐配置
-
-```
-npm install -D eslint prettier @typescript-eslint/parser @typescript-eslint/eslint-plugin
-```
-
-### 9.2 常用命令
-
-```
-npm run lint          # 代码检查
-npm run lint:fix      # 自动修复
-npm run format        # 格式化
-```
-
----
-
-## 10. 性能优化
+## 8. 性能优化
 
 <!-- [注释] 先写正确的代码，再优化性能 -->
 
 ### 核心原则
 
 | 原则 | 说明 |
-|---|---|
+|-----|-----|
 | **先正确后优化** | 先确保功能正确，再考虑性能 |
 | **先测量后优化** | 用 DevTools 定位瓶颈 |
 | **用户感知优先** | 优化用户能感知到的性能问题 |
@@ -804,144 +928,46 @@ npm run format        # 格式化
 ### 组件渲染优化
 
 ```
-import { useMemo, useCallback, memo } from 'react'
+import { memo } from 'react';
+import { useMemo } from 'react';
 
-// ✅ 使用 useMemo 缓存计算结果
-const filteredList = useMemo(() =>
-  list.filter(item => item.active)
-, [list])
+// ✅ 好：使用 useMemo 缓存计算结果
+const filteredList = useMemo(() => (
+  list.filter(item => item?.active)
+), [list]);
 
-// ✅ 使用 useCallback 稳定函数引用
-const handleClick = useCallback(() => {
+// ✅ 好：使用 memo 避免重渲染
+const ExpensiveComponent = ({ data }) => {
   // ...
-}, [deps])
+};
 
-// ✅ 使用 memo 避免不必要的重渲染
-export const ExpensiveComponent = memo(({ data }) => {
-  // ...
-})
-```
-
-### 列表渲染优化
-
-```
-import { FixedSizeList } from 'react-window'
-
-// ✅ 大列表使用虚拟滚动
-<FixedSizeList
-  height={400}
-  itemCount={1000}
-  itemSize={50}
-  width="100%"
->
-  {Row}
-/FixedSizeList>
-
-// ❌ 避免：大列表直接渲染
-{list.map(item => <div key={item.id}>{item.name}</div>)}
+export default memo(ExpensiveComponent);
 ```
 
 ### 懒加载
 
 ```
-import { lazy, Suspense } from 'react'
-
-// ✅ 路由懒加载
-const routes = [
-  {
-    path: '/dashboard',
-    element: <Dashboard />
-  }
-]
-
-// ✅ 组件懒加载
-const HeavyComponent = lazy(() => import('@/components/HeavyComponent'))
-
-// ✅ Suspense 包裹
-<Suspense fallback={<Spin />}>
-  <HeavyComponent />
-</Suspense>
-
-// ✅ 条件懒加载（仅在需要时加载）
+// ✅ 好：条件懒加载（仅在需要时加载）
 {showHeavy && <HeavyComponent />}
-```
-
-### 网络请求优化
-
-```
-// ✅ 请求防抖
-import { useDebounceCallback } from 'antd/es/input/hooks'
-
-const debouncedSearch = useDebounceCallback((keyword: string) => {
-  api.search(keyword)
-}, 300)
-
-// ✅ Alova 缓存
-import { useRequest } from 'alova'
-
-const { data } = useRequest(
-  () => api.getUser(id),
-  {
-    localCache: 5 * 60 * 1000, // 5 分钟缓存
-  }
-)
-```
-
-### 打包优化
-
-```
-// vite.config.ts
-export default defineConfig({
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor': ['react', 'react-router', 'zustand'],
-          'antd': ['antd'],
-        }
-      }
-    }
-  }
-})
 ```
 
 ### 避免常见陷阱
 
 | 陷阱 | 解决方案 |
-|---|---|
+|-----|-----|
 | 大列表直接渲染 | 使用虚拟滚动 |
-| 频繁触发计算 | 检查 useMemo 依赖 |
-| key 不稳定 | 使用唯一稳定的 key |
-| 监听整个对象 | 使用 useMemo 替代 |
-| 未取消的请求 | useEffect 中返回清理函数 |
+| 频繁触发重计算 | 精简依赖数组 |
+| 未使用 key 或 key 不稳定 | 使用唯一稳定的 key |
+| 依赖对象/数组引用 | 提取具体属性作为依赖 |
+| 未取消的请求/定时器 | 在 `useEffect` 中清理 |
 
 ### 性能分析工具
 
 ```
 # Chrome DevTools
-# - Performance 面板：录制运行时性能
-# - Lighthouse：整体性能评分
-# - React DevTools：组件渲染性能
-
-# 打包分析
-npm install -D rollup-plugin-visualizer
-```
-
----
-
-## 规则溯源要求
-
-当回复明确受到本规则约束时，在回复末尾声明：
-
-```
-> 📋 本回复遵循规则：`frontend-style.md` - [具体章节]
-```
-
-示例：
-
-```
-> 📋 本回复遵循规则：`frontend-style.md` - UI 视觉风格
-> 📋 本回复遵循规则：`frontend-style.md` - React 编码规范
+- Performance 面板：录制运行时性能
+- Lighthouse：整体性能评分
+- React DevTools：组件渲染性能
 ```
 
 ---
@@ -949,7 +975,15 @@ npm install -D rollup-plugin-visualizer
 ## 参考资料
 
 - [React 官方文档](https://react.dev/)
-- [React Hooks](https://react.dev/reference/react)
+- [React Hooks](https://react.dev/reference/react/hooks/)
 - [Ant Design](https://ant.design/)
-- [Valtio](https://valtio.pmnd.rs/)
+- [Valtio](https://valtio.dev/)
 - [TS 官方文档](https://www.typescriptlang.org/)
+
+---
+
+## 规则溯源
+
+```
+> 📋 本回复遵循：`frontend-dev/frontend-style.md` - [具体章节]
+```
