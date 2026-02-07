@@ -32,7 +32,7 @@ allowed-tools: Read, Grep, Glob
 ### A2. 提取变量
 
 | 类别 | 提取内容 |
-|------|---------|
+|------|------|
 | 颜色 | `--ant-color-*`、自定义颜色变量 |
 | 字体 | `font-size`、`font-family`、`font-weight` |
 | 间距 | `padding`、`margin`、`gap` 常用值 |

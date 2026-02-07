@@ -51,7 +51,7 @@ private static final ImmutableSortedMap<Integer, String> MONTH_MAP =
 ### 创建方式
 
 | 方式 | 适用场景 | 示例 |
-|------|---------|------|
+|------|------|------|
 | `of()` | 少量固定元素（≤5个） | `ImmutableMap.of("k1", "v1", "k2", "v2")` |
 | `builder()` | 动态构建或超过5个 | `ImmutableMap.builder().put(...).build()` |
 | `copyOf()` | 从已有集合创建 | `ImmutableSet.copyOf(existingSet)` |
@@ -78,7 +78,7 @@ ImmutableList<Integer> codes = ImmutableList.of(
 ### 与 JDK 的区别
 
 | 特性 | Guava Immutable* | Collections.unmodifiableXxx |
-|------|-----------------|----------------------------|
+|------|------|------|
 | 真正不可变 | ✅ 防御性拷贝，完全独立 | ❌ 只是视图，原集合变它也变 |
 | null 元素 | ❌ 不允许（快速失败） | ✅ 允许 |
 | 线程安全 | ✅ 天然安全 | ⚠️ 取决于原集合 |
@@ -90,7 +90,7 @@ ImmutableList<Integer> codes = ImmutableList.of(
 ### Hutool StrUtil.split vs String.split
 
 | 特性 | `StrUtil.split(str, sep)` | `String.split(regex)` |
-|------|--------------------------|----------------------|
+|------|------|------|
 | 分隔符类型 | 普通字符串 | 正则表达式 |
 | null 处理 | ✅ 返回 null | ❌ 抛 NPE |
 | 连续分隔符 | 合并为一个 | 产生空串 |

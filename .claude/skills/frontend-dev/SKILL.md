@@ -32,7 +32,7 @@ paths:
 ### 后台系统（默认风格）
 
 | 要素 | 要求 |
-|-----|-----|
+|------|------|
 | 主题 | 使用组件库默认主题 |
 | 配色 | 黑白灰为主 + 1 个主色点缀 |
 | 动效 | 克制，仅保留必要的交互反馈 |
@@ -42,7 +42,7 @@ paths:
 ## 技术栈
 
 | 层级 | React（首选） | Vue（备选） |
-|------|------------|--------------|
+|------|------|------|
 | 框架 | React 18 + TS/JS | Vue 3 + TS/JS |
 | 构建 | Umi | Vite |
 | 路由 | React Router 6 | Vue Router 4 |
@@ -182,7 +182,7 @@ export type UserCardProps = {
 ### 命名约定
 
 | 类型 | 约定 | 示例 |
-|-----|-----|-----|
+|------|------|------|
 | 组件文件 | `ComponentName/index.tsx` | `UserCard/index.tsx` |
 | 样式文件 | `ComponentName/index.scss` | `UserCard/index.scss` |
 | 状态文件 | `ComponentName/state.ts` | `UserCard/state.ts` |

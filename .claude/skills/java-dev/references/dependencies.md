@@ -13,7 +13,7 @@
 ```
 
 | 依赖 | 版本 | 引入方式 |
-|------|------|----------|
+|------|------|------|
 | MyBatis-Flex | 1.11.x | BOM + `mybatis-flex-spring-boot-starter` |
 | Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
 | Guava | 32.1.2-jre | `guava` 或按需模块 |

@@ -89,7 +89,7 @@ description: 当用户执行系统级命令（sysctl、iptables、systemctl、Do
 当用户使用 Cloudflare 代理时：
 
 | 禁止操作 | 原因 |
-|---------|------|
+|------|------|
 | 随意修改内核网络参数 | 可能导致 Cloudflare 连接异常 |
 | 随意修改 DNS 记录 | 影响 CDN 解析 |
 | 随意修改 SSL/TLS 设置 | 可能导致证书验证失败 |

@@ -39,7 +39,7 @@ new ThreadPoolExecutor(
 ### 参数设置原则
 
 | 任务类型 | 特点 | corePoolSize | maximumPoolSize |
-|---------|------|--------------|-----------------|
+|------|------|------|------|
 | CPU 密集型 | 计算、编码、算法 | CPU 核心数 | CPU 核心数 + 1 |
 | I/O 密集型 | 数据库、网络、文件 | CPU 核心数 × 2 | CPU 核心数 × 4（或经压测确定） |
 
@@ -83,7 +83,7 @@ private final ThreadPoolExecutor cpuExecutor = new ThreadPoolExecutor(
 ### 拒绝策略选择
 
 | 策略 | 行为 | 适用场景 |
-|------|------|---------|
+|------|------|------|
 | `AbortPolicy` | 抛异常 | 需要感知过载、支持重试 |
 | `CallerRunsPolicy` | 调用方执行 | 不丢弃任务、可接受阻塞 |
 | `DiscardPolicy` | 静默丢弃 | ⚠️ 慎用，任务不重要时 |
@@ -96,7 +96,7 @@ private final ThreadPoolExecutor cpuExecutor = new ThreadPoolExecutor(
 ### 三种方式对比
 
 | 方式 | 行为 | Future 状态变化 | 后续 get |
-|------|------|----------------|---------|
+|------|------|------|------|
 | `get(timeout, unit)` | 本次获取超时 | 不变 | 可继续 get |
 | `orTimeout(timeout, unit)` | Future 异常完成 | 变为异常状态 | 抛 CompletionException |
 | `completeOnTimeout(value, timeout, unit)` | Future 用默认值完成 | 变为正常完成 | 返回默认值 |
