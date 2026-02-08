@@ -1,7 +1,7 @@
 # [项目名称] 项目配置
 
-作者：wwj
-版本：v1.0
+作者：huangyalong
+版本：v1.0.0
 日期：[当前日期]
 
 <!--
@@ -28,39 +28,14 @@
 
 | 层级 | 技术 | 版本 |
 |------|------|------|
-| 后端 | Java / Node.js | x.x+ |
-| Web 框架 | Spring Boot / Express | x.x+ |
-| ORM | JPA / Prisma | x.x+ |
-| 数据库 | MySQL / PostgreSQL | x.x |
-| 前端框架 | React / Vue | x.x+ |
-| 前端语言 | TypeScript | x.x+ |
-| UI 组件库 | Ant Design / Element Plus | x.x+ |
-| 构建工具 | Vite / Webpack | x.x+ |
-
----
-
-## 目录结构
-
-<!-- 根据实际项目结构修改 -->
-
-```
-项目名/
-├── src/main/java               # 入口文件
-├── internal/ / src/            # 业务代码
-│   ├── handler/ / controller/  # HTTP 处理器
-│   ├── service/                # 业务逻辑
-│   ├── repository/ / dao/      # 数据访问
-│   └── model/ / entity/        # 数据模型
-├── web/ / frontend/            # 前端代码（如有）
-│   ├── src/
-│   │   ├── components/         # 组件
-│   │   ├── pages/ / views/     # 页面
-│   │   ├── api/                # API 调用
-│   │   └── stores/             # 状态管理
-│   └── package.json
-├── restart.sh                  # 重启脚本（如有）
-└── pom.xml / package.json
-```
+| 后端 | Java | x.x+ |
+| Web 框架 | Spring Boot | x.x+ |
+| ORM | MyBatis-Flex | x.x+ |
+| 数据库 | MySQL/PostgreSQL | x.x |
+| 前端框架 | React/Vue | x.x+ |
+| 前端语言 | TS/JS | x.x+ |
+| UI 组件库 | Ant Design/Element Plus | x.x+ |
+| 构建工具 | Umi/Vite | x.x+ |
 
 ---
 
@@ -72,10 +47,9 @@
 
 | 约定 | 说明 |
 |------|------|
-| 启动方式 | 使用 `./restart.sh` / `docker-compose up` / `npm run dev` |
-| 数据库迁移 | Flyway / 手动 SQL / JPA Hibernate |
+| 数据库迁移 | MyBatis-Flex/Flyway/手动 SQL |
 | 注释风格 | 不使用行尾注释，注释单独成行 |
-| 作者署名 | 所有文档和代码署名使用 wwj |
+| 作者署名 | 所有文档和代码署名使用 huangyalong |
 
 <!-- 添加其他项目特定约定 -->
 
@@ -87,18 +61,55 @@
 
 ```
 // Java 示例
-public class Result<T> {
-    private int code;
-    private String message;
+@Data
+@Builder
+@Schema(name = "响应信息")
+public class ApiResponse<T> implements Serializable {
+
+    @Schema(description = "响应状态")
+    private Boolean success;
+
+    @Schema(description = "响应数据")
     private T data;
+
+    @Schema(description = "响应信息")
+    private String message;
+
+    @Schema(description = "响应代码")
+    private Integer code;
+
+    @Schema(description = "响应方式")
+    private ShowType showType;
+
+    @Schema(description = "异常描述")
+    private String e;
+
+    @Schema(description = "异常编号")
+    private String traceId;
+
+    @Schema(description = "主机地址")
+    private String host;
 }
 ```
 
-**错误码约定**：
-- `0`: 成功
-- `1xxx`: 参数错误
-- `2xxx`: 业务错误
-- `5xxx`: 系统错误
+**HTTP 状态码**：
+
+| 状态码 | 说明 |
+|------|------|
+| 400 | 错误的请求 |
+| 401 | 未授权 |
+| 403 | 没有访问权限 |
+| 404 | 没有获取到数据 |
+| 500 | 服务器内部错误 |
+
+**业务错误码**：
+
+| 错误码 | 说明 |
+|------|------|
+| -1 | 操作失败 |
+| 1001 | 系统繁忙 |
+| 10000 | 业务异常 |
+| 20000 | 参数错误 |
 
 ### 前端规范
 
@@ -106,35 +117,9 @@ public class Result<T> {
 
 | 约定 | 说明 |
 |------|------|
-| UI 风格 | [Ant Design / Element Plus] 默认主题 |
+| UI 风格 | [Ant Design/Element Plus] 默认主题 |
 | 设计原则 | 降低用户操作费力度，信息密度适中 |
 | 避免 | 花哨装饰、渐变背景、复杂动效 |
-
----
-
-## 常用操作
-
-<!-- 项目常用命令 -->
-
-### 启动/重启服务
-
-```bash
-# 重启服务（推荐）
-./restart.sh
-
-# 仅编译
-mvn package / npm run build
-
-# 开发模式
-cd web && npm run dev
-```
-
-### 数据库操作
-
-```bash
-# MySQL
-mysql -u root -p [数据库名]
-```
 
 ---
 
@@ -156,6 +141,5 @@ mysql -u root -p [数据库名]
 
 <!-- 根据项目情况添加 -->
 
-- ❌ 不要修改 `restart.sh` 的核心逻辑（除非明确要求）
 - ❌ 不要直接操作生产数据库
 - ❌ 不要在代码中硬编码敏感信息
