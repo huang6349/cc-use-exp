@@ -7,6 +7,8 @@
 ```
 <properties>
     <mybatis-flex.version>1.11.x</mybatis-flex.version>
+    <mybatis-flex-ext.version>1.11.3.x</mybatis-flex-ext.version>
+    <auto-table.version>2.5.x</auto-table.version>
     <hutool.version>5.8.x</hutool.version>
     <guava.version>32.1.x-jre</guava.version>
 </properties>
@@ -15,6 +17,8 @@
 | 依赖 | 版本 | 引入方式 |
 |------|------|------|
 | MyBatis-Flex | 1.11.x | BOM + `mybatis-flex-spring-boot-starter` |
+| MyBatis-Flex-Ext | 1.11.3.x | `mybatis-flex-ext-spring-boot-starter` |
+| Auto-Table | 2.5.x | `auto-table-spring-boot-starter` |
 | Hutool | 5.8.x | BOM + `hutool-all` 或按需模块 |
 | Guava | 32.1.2-jre | `guava` 或按需模块 |
 
