@@ -47,7 +47,7 @@
 
 | 约定 | 说明 |
 |------|------|
-| 数据库迁移 | MyBatis-Flex/Flyway/手动 SQL |
+| 数据库迁移 | Auto-Table/Flyway |
 | 注释风格 | 不使用行尾注释，注释单独成行 |
 | 作者署名 | 所有文档和代码署名使用 huangyalong |
 
