@@ -1,6 +1,6 @@
 # 错误码
 
-> 个人/团队约定的常用错误码
+> 个人/团队约定的错误码
 
 ---
 
@@ -43,5 +43,5 @@ public enum ErrorCode {
 ## 规则溯源
 
 ```
-> 📋 本回复遵循：`java-dev/error-code.md` - [具体章节]
+> 📋 本回复遵循：`java-dev/errorcode.md` - [具体章节]
 ```

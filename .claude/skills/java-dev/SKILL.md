@@ -225,6 +225,25 @@ StaticLog.debug("Finding user by id: " + userId);
 ```
 // ✅ 好：统一错误码枚举
 throw new BusinessException(NOT_FOUND);
+
+// ✅ 好：全局异常处理
+@Configuration
+@RestControllerAdvice
+public class ExceptionHandling {
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.OK)
+    protected ApiResponse<?> handleException(BusinessException ex) {
+        return ApiResponse.fail(
+                ex.getMessage(),
+                ex.getErrorCode(),
+                ex.getClass().getName(),
+                ex.getShowType(),
+                ex.getTraceId(),
+                ex.getHost()
+        );
+    }
+}
 ```
 
 ---
@@ -234,8 +253,9 @@ throw new BusinessException(NOT_FOUND);
 | 文件 | 内容 |
 |------|------|
 | `references/java-style.md` | 命名约定、异常处理、Spring Boot、测试规范 |
+| `references/response.md` | 统一 API 响应结构（ApiResponse） |
+| `references/error.md` | 错误码枚举（通用错误、请求错误、业务错误） |
 | `references/dependencies.md` | 常用依赖（Hutool 等） |
-| `references/error-code.md` | 错误码枚举（通用错误、请求错误、业务错误） |
 | `references/collections.md` | 不可变集合（Guava）、字符串分割 |
 | `references/concurrency.md` | 线程池配置、CompletableFuture 超时 |
 | `references/code-patterns.md` | 卫语句、枚举优化、策略工厂模式 |
