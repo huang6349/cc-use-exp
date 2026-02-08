@@ -185,28 +185,24 @@ public class ApiResponse<T> implements Serializable {
 ## 使用示例
 
 ```
-@Override
 public ApiResponse<QueryWrapper> handlerQuery(UserQueries queries) {
     var data = getBaseService()
         .getQueryWrapper(queries);
     return ApiResponse.ok(data);
 }
 
-@Override
 public ApiResponse<Mono<Boolean>> handlerSave(UserBO userBO) {
     var data = getBaseService()
         .add(userBO);
     return ApiResponse.ok(data);
 }
 
-@Override
 public ApiResponse<Mono<Boolean>> handlerUpdate(UserBO userBO) {
     var data = getBaseService()
         .update(userBO);
     return ApiResponse.ok(data);
 }
 
-@Override
 public ApiResponse<Mono<Boolean>> handlerDelete(Long id) {
     var data = getBaseService()
         .delete(id);
