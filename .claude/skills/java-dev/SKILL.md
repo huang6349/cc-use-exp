@@ -76,14 +76,14 @@ public class Example {
 
 ---
 
-## DTO/VO/BO 类规范
+## DTO/VO 类规范
 
 | 规则 | 说明 |
 |------|------|
-| ❌ 禁止手写 getter/setter | DTO、VO、BO、Request、Response 类一律使用 Lombok |
+| ❌ 禁止手写 getter/setter | DTO、VO、Request、Response 类一律使用 Lombok |
 | ✅ 使用 `@Data` | 普通 DTO |
-| ✅ 使用 `@Builder` | 字段较多时配合使用 |
 | ✅ 使用 `@Value` | 不可变 DTO |
+| ✅ 使用 `@Builder` | 字段较多时配合使用 |
 
 ```
 // ✅ 好：使用 Lombok
