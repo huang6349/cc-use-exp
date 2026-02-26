@@ -110,6 +110,7 @@ cp .claude/CLAUDE.md ~/.claude/
 | `ops-safety.md` | 危险命令确认、回滚方案、风险提示 | 始终生效（详细规范见 skills） |
 | `doc-sync.md` | 配置/结构变更时提醒更新文档 | 修改配置时 |
 | `bash-style.md` | Bash 核心规范：禁止行尾注释 | 始终生效（详细规范见 skills） |
+| `file-size-limit.md` | 单文件行数上限控制（Java 300行、TSX 200行等） | 操作 .java/.tsx/.vue/.ts/.js 时 |
 
 **效果示例**：
 
