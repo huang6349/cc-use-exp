@@ -339,7 +339,18 @@ UserCard.defaultProps = {
 export default UserCard;
 ```
 
-### 3.4 Props 规范
+### 3.4 导入规范
+
+```
+// ✅ 好：每个 import 只导入一个内容
+import { Button } from 'antd';
+import { useMemo } from 'react';
+
+// ❌ 差：一个 import 导入多个内容
+import { Button, Card, Spin } from 'antd';
+```
+
+### 3.5 Props 规范
 
 ```
 // ✅ 好：使用 TS 类型定义
@@ -368,7 +379,7 @@ const {
 } = props;
 ```
 
-### 3.5 布尔值表示
+### 3.6 布尔值表示
 
 ```
 // ✅ 好：使用 !0 / !1 表示 true / false
@@ -384,7 +395,7 @@ const config = {
 };
 ```
 
-### 3.6 样式规范
+### 3.7 样式规范
 
 ```
 // ✅ 好：使用 CSS Modules 防止样式污染
