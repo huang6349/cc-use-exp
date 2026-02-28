@@ -46,6 +46,7 @@ git diff
 - body: 变更详情，用列表形式，中文
 - 不要加 emoji
 - 不要加 AI 生成声明
+- 不要加 Co-Authored-By
 
 ### 4. 输出格式
 
