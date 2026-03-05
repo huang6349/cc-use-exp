@@ -187,6 +187,35 @@ export type UserCardProps = {
 | 样式文件 | `ComponentName/index.scss` | `UserCard/index.scss` |
 | 状态文件 | `ComponentName/state.ts` | `UserCard/state.ts` |
 
+### 导入规范
+
+```
+// 1. 导入顺序：type → hofs → hocs → components → hooks → service → state → style
+// 2. 每类内部：React → 第三方 → 项目内部
+// 3. 每个 import 只导入一个内容
+
+import type { User } from '@/types';
+import type { UserCardProps } from './types';
+import { withResponse } from '@/hofs';
+import { modal } from '@/hocs';
+import { Button } from 'antd';
+import { Card } from 'antd';
+import { Spin } from 'antd';
+import { useMemo } from 'react';
+import { useRequest } from 'alova/client';
+import { useSnapshot } from 'valtio';
+import service from './service';
+import state from './state';
+import styles from './index.scss';
+
+// ✅ 好：每个 import 只导入一个内容
+import { Button } from 'antd';
+import { useMemo } from 'react';
+
+// ❌ 差：一个 import 导入多个内容
+import { Button, Card, Spin } from 'antd';
+```
+
 ---
 
 ## 状态管理（Valtio）
@@ -260,7 +289,7 @@ src/
 完整规范见 `references/frontend-style.md`，包含：
 
 - 完整 UI 风格约束
-- React 编码规范详解
+- React 编码规范详解（导入规范、Props 规范、布尔值表示等）
 - Valtio 状态管理
 - API 请求封装
 - 性能优化详解
