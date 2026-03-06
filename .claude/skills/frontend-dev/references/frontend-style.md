@@ -114,7 +114,23 @@ paths:
 
 <!-- [注释] React Hooks 风格 -->
 
-### 3.1 组件基础
+### 3.1 JS 优先原则
+
+> **业务代码优先使用 `.js` 而非 `.jsx`**
+
+| 类型 | 文件 | 说明 |
+|------|------|------|
+| 业务代码 | `.js` | 优先，更轻量，无需 Babel 转换配置 |
+| 业务代码 | `.jsx` | ❌ 不推荐 |
+| 通用组件 | `.tsx` | 需要类型定义，供其他模块复用 |
+
+**原因**：
+
+- `.js` 更轻量，无需额外配置
+- `.jsx` 需要 Babel 转换，增加构建复杂度
+- 通用组件需要类型定义，使用 `.tsx` 便于复用
+
+### 3.2 组件基础
 
 **必须使用 Hooks**:
 
@@ -255,7 +271,7 @@ export type UserCardProps = {
 };
 ```
 
-### 3.2 命名约定
+### 3.3 命名约定
 
 | 类型 | 约定 | 示例 |
 |------|------|------|
@@ -266,7 +282,7 @@ export type UserCardProps = {
 | 状态文件 | `ComponentName/state.ts` | `UserCard/state.ts` |
 | 类型文件 | `ComponentName/types.ts` | `UserCard/types.ts` |
 
-### 3.3 组件组织
+### 3.4 组件组织
 
 ```
 // 1. 导入：类别顺序 type → hofs → hocs → components → hooks → service → state → style
@@ -339,7 +355,7 @@ UserCard.defaultProps = {
 export default UserCard;
 ```
 
-### 3.4 导入规范
+### 3.5 导入规范
 
 ```
 // ✅ 好：每个 import 只导入一个内容
@@ -350,7 +366,7 @@ import { useMemo } from 'react';
 import { Button, Card, Spin } from 'antd';
 ```
 
-### 3.5 Props 规范
+### 3.6 Props 规范
 
 ```
 // ✅ 好：使用 TS 类型定义
@@ -379,7 +395,7 @@ const {
 } = props;
 ```
 
-### 3.6 布尔值表示
+### 3.7 布尔值表示
 
 ```
 // ✅ 好：使用 !0 / !1 表示 true / false
@@ -395,7 +411,7 @@ const config = {
 };
 ```
 
-### 3.7 样式规范
+### 3.8 样式规范
 
 ```
 // ✅ 好：使用 CSS Modules 防止样式污染
