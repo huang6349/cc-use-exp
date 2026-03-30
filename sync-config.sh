@@ -17,7 +17,7 @@ print_line() {
     printf '%b\n' "$1"
 }
 
-SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 print_line "${GREEN}=== 配置同步工具 ===${NC}"
 print_line "源目录: ${SCRIPT_DIR}"
@@ -121,3 +121,4 @@ fi
 
 printf '\n'
 print_line "${GREEN}=== 同步完成 ===${NC}"
+print_line "局部配置将自动覆盖全局配置，不影响功能使用"

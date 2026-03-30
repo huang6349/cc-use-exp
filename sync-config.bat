@@ -5,8 +5,8 @@ REM 同步 .claude 配置到用户根目录
 
 set "HOME_DIR=%USERPROFILE%"
 
-REM 获取项目根目录（tools 上一级）
-set "SCRIPT_DIR=%~dp0.."
+REM 获取项目根目录
+set "SCRIPT_DIR=%~dp0"
 for %%i in ("%SCRIPT_DIR%") do set "SCRIPT_DIR=%%~fi"
 
 echo === 配置同步工具 ===
@@ -90,4 +90,5 @@ if exist "%SCRIPT_DIR%\.claude" (
 
 echo.
 echo === 同步完成 ===
+echo 局部配置将自动覆盖全局配置，不影响功能使用
 pause

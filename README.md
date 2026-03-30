@@ -145,8 +145,8 @@ cp .claude/CLAUDE.md ~/.claude/
 | 命令 | 用途 | 使用示例 |
 |------|------|---------|
 | `/fix` | 快速修复 Bug | `/fix 登录接口返回 500` |
-| `/quick-review` | 快速审查（git diff + 简要意见） | `/quick-review` |
-| `/code-review` | 正式代码审查 | `/code-review` |
+| `/review quick` | 快速审查（git diff + 简要意见） | `/review quick` |
+| `/review` | 正式代码审查 | `/review` |
 | `/debug` | 复杂问题排查（复现→假设→验证→修复） | `/debug 定时任务不执行` |
 | `/commit-msg` | 生成 git commit message | `/commit-msg` 或 `/commit-msg all` |
 
@@ -154,7 +154,7 @@ cp .claude/CLAUDE.md ~/.claude/
 
 | 命令 | 用途 | 使用示例 |
 |------|------|---------|
-| `/security-review` | 安全审查当前分支代码 | `/security-review` |
+| `/review security` | 安全审查当前分支代码 | `/review security` |
 | `/new-feature` | 新功能全流程（需求→设计→实现） | `/new-feature 用户导出功能` |
 | `/design-doc` | 生成技术设计文档框架 | `/design-doc 用户权限模块` |
 | `/requirement-doc` | 生成需求文档框架 | `/requirement-doc 报表功能` |
@@ -176,11 +176,11 @@ cp .claude/CLAUDE.md ~/.claude/
 |------|---------|--------|
 | 日常写代码 | 直接写，Rules + Skills 自动生效 | ⭐ |
 | 修个小 Bug | `/fix 问题描述` | ⭐⭐ |
-| 提交前快速看看 | `/quick-review` | ⭐⭐ |
+| 提交前快速看看 | `/review quick` | ⭐⭐ |
 | 生成 commit message | `/commit-msg` | ⭐⭐ |
-| 正式代码审查 | `/code-review` | ⭐⭐ |
+| 正式代码审查 | `/review` | ⭐⭐ |
 | 复杂 Bug 排查 | `/debug 问题描述` | ⭐⭐⭐ |
-| 安全审查 | `/security-review` | ⭐⭐⭐ |
+| 安全审查 | `/review security` | ⭐⭐⭐ |
 | 开发新功能 | `/new-feature 功能名` | ⭐⭐⭐ |
 
 ```
@@ -189,9 +189,9 @@ cp .claude/CLAUDE.md ~/.claude/
 └─ 复杂 Bug → /debug 问题描述
 
 代码审查？
-├─ 快速看看 → /quick-review
-├─ 正式审查 → /code-review
-└─ 安全审查 → /security-review
+├─ 快速看看 → /review quick
+├─ 正式审查 → /review
+└─ 安全审查 → /review security
 
 新功能？
 ├─ 完整流程 → /new-feature 功能名
@@ -254,7 +254,7 @@ A: 在 `.claude/skills/` 下创建新目录（如 `rust-dev/`），添加 `SKILL
 │   └── ops-safety/               # 运维安全完整规范
 └── commands/                     # 命令：显式调用
     ├── fix.md
-    ├── code-review.md
+    ├── review.md
     ├── debug.md
     ├── status.md
     └── ...
