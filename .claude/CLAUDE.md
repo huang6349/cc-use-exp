@@ -104,7 +104,7 @@
 │   ├── java-dev/
 │   └── ...
 └── commands/          # 用户命令
-    ├── code-review.md
+    ├── review.md
     ├── design-*.md
     └── ...
 ```
