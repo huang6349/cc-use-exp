@@ -45,6 +45,13 @@ paths: "**/*"
 - ❌ "Generated with Claude Code" 或类似标记
 - ❌ AI 生成声明、作者署名、自动时间戳
 
+### 8. 代码提交规范
+
+- ❌ 禁止自动执行 `git commit`（包括生成 message 后自动提交）
+- ❌ 禁止使用 `git add .` 全量暂存
+- ✅ 提交前必须使用 `/commit-msg` 命令生成结构化 commit message
+- ✅ 必须 `git add <具体文件>` 精确暂存变更文件
+
 ---
 
 ## ✅ 必须遵循
